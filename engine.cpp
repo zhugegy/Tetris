@@ -21,7 +21,6 @@ static int decide_parameter_detail__engine(Param *pstParam,
   BlockElement **ppstBlockElement, unsigned char **ppchArrayAddress,
   int *pnCoordX, int *pnCoordY, PlayerVSCOMControlFlag eFlag);
 
-
 /*
 //召唤新方块
 int summon_new_block__engine(Param *pstParam, int *pnControlFlag)
@@ -743,31 +742,52 @@ static int get_relative_coord_after_rotation__engine(int nQudrantType,
   return 0;
 }
 
+//获得最下方的一行可以消除的行号
+int get_the_line_at_bottom_to_clean__data_processor(Param *pstParam,
+  PlayerVSCOMControlFlag eFlag)
+{
+  int i = 0;
+  int j = 0;
+
+  BlockElement *pstTmpExtral = NULL;
+  unsigned char *chTmpArrayAddress = NULL;
+  int nCoordX = 0;
+  int nCoordY = 0;
+
+  decide_parameter_detail__engine(pstParam, &pstTmpExtral, &chTmpArrayAddress,
+    &nCoordX, &nCoordY, eFlag);
+
+  for (i = TETRIS_PLAY_SPACE_Y - 1 - 1; i >= 0; i--)
+  {
+    for (j = 1; j <= TETRIS_PLAY_SPACE_X - 1 - 1; j++)
+    {
+      if (*(chTmpArrayAddress + i * TETRIS_PLAY_SPACE_X + j) !=
+        SOLID_BLOCK_VALUE)
+      {
+        break;
+      }
+      if (j == TETRIS_PLAY_SPACE_X - 1 - 1)
+      {
+        return i;
+      }
+    }
+  }
+
+  return -1;
+}
+
 int clean_line__engine(Param *pstParam, PlayerVSCOMControlFlag eFlag)
 {
   int nLineNumber = -1;
 
-  unsigned char *pchTmp = NULL;
-
-  if (eFlag = PLAYER_CONTROL)
-  {
-    pchTmp = (unsigned char *) pstParam->TetrisPlaySpacePlayer;
-  }
-  if (eFlag = COM_CONTROL)
-  {
-    pchTmp = (unsigned char *) pstParam->TetrisPlaySpaceCOM;
-  }
-
   //检测是否有可以消除的行
-  nLineNumber = get_the_line_at_bottom_to_clean__data_processor(
-    (unsigned char (*)[TETRIS_PLAY_SPACE_X]) pchTmp);
+  nLineNumber = get_the_line_at_bottom_to_clean__data_processor(pstParam, eFlag);
 
   while (nLineNumber != -1)
   {
     clean_specific_line(pstParam, nLineNumber, eFlag);
 	//可以在此处添加得分相关代码
-    nLineNumber = get_the_line_at_bottom_to_clean__data_processor(
-      (unsigned char (*)[TETRIS_PLAY_SPACE_X]) pchTmp);
+    nLineNumber = get_the_line_at_bottom_to_clean__data_processor(pstParam, eFlag);
   }
 
   return 0;

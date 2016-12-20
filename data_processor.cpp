@@ -366,31 +366,6 @@ int get_customized_block_center_point__data_processor(ElementCoord *pstCoord,
   return 0;
 }
 
-//获得最下方的一行可以消除的行号
-int get_the_line_at_bottom_to_clean__data_processor(
-  unsigned char chTetris[][TETRIS_PLAY_SPACE_X])
-{
-  int i = 0;
-  int j = 0;
-
-  for (i = TETRIS_PLAY_SPACE_Y - 1 - 1; i >= 0; i--)
-  {
-    for (j = 1; j <= TETRIS_PLAY_SPACE_X - 1 - 1; j++)
-    {
-      if (chTetris[i][j] != SOLID_BLOCK_VALUE)
-      {
-        break;
-      }
-      if (j == TETRIS_PLAY_SPACE_X - 1 - 1)
-      {
-        return i;
-      }
-    }
-  }
-
-  return -1;
-}
-
 //随机出一个方块（序号）
 int get_a_random_block(Param *pstParam)
 {

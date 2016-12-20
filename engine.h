@@ -11,3 +11,5 @@ int move_left_block_player__engine(Param *pstParam);
 int move_right_block_player__engine(Param *pstParam);
 int rotate_block_player__engine(Param *pstParam);
 int clean_line__engine(Param *pstParam, PlayerVSCOMControlFlag eFlag);
+int get_the_line_at_bottom_to_clean__data_processor(Param *pstParam,
+  PlayerVSCOMControlFlag eFlag);
