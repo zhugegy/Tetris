@@ -9,16 +9,24 @@
 #include <conio.h>
 
 static int switch_session_block__main_loop(Param *pstParam, int *pnCurrentBlock,
-                                           int *pnNextBlock);
+	int *pnNextBlock, PlayerVSCOMControlFlag eFlag);
 
 //玩家和电脑都在这同一个循环中
 int tetris_loop__main_loop(Param *pstParam)
 {
   int nControlFlag = CONTROL_FLAG_MAIN_LOOP_RUNNING;
+
   int nCurrentBlockPlayer = 0;
   int nNextBlockPlayer = 0;
-  //int nCurrentBlockCom[MAX_COM_NUM] = {0};    电脑以后再加
-  DWORD dwTimeCounter = 0;
+  DWORD dwTimeCounterPlayer = 0;
+  bool bIsSessionEndedPlayer = false;
+
+  //int nCurrentBlockCom[MAX_COM_NUM] = {0};    多重电脑，以后再加
+  int nCurrentBlockCOM = 0;
+  int nNextBlockCOM = 0;
+  DWORD dwTimeCounterCOM = 0;
+  bool bIsSessionEndedCOM = false;
+
   unsigned int k = 0;    //用户输入(事件)计数
   //获取输入句柄
   HANDLE hStdIn = GetStdHandle(STD_INPUT_HANDLE);
@@ -31,35 +39,81 @@ int tetris_loop__main_loop(Param *pstParam)
 
   //session更新
   switch_session_block__main_loop(pstParam, &nCurrentBlockPlayer, 
-    &nNextBlockPlayer);
-  summon_new_block__engine(pstParam, &nControlFlag);
+    &nNextBlockPlayer, PLAYER_CONTROL);
+
+  //召唤新的方块
+  summon_new_block__engine(pstParam, &nControlFlag, PLAYER_CONTROL);
 
   //设定起始时间
-  dwTimeCounter = GetTickCount();
+  dwTimeCounterPlayer = GetTickCount();
 
-  while (nControlFlag != CONTROL_FLAG_MAIN_LOOP_GAME_OVER)
+  //如果是人机对战模式，针对电脑一边，单独：
+  if (pstParam->eStageFlag == STAGE_PLAY_VS_COM)
   {
-    //如果一个方块完毕了，session更新(玩家)
-    if (nControlFlag == CONTROL_FLAG_MAIN_LOOP_SESSION_ENDING_PLAYER)
+    //随机出下一个方块（其实就是第一个方块，因为马上就session更新）
+    nNextBlockCOM = get_a_random_block(pstParam);
+    
+    //session更新
+    switch_session_block__main_loop(pstParam, &nCurrentBlockCOM,
+      &nNextBlockCOM, COM_CONTROL);
+    
+    //召唤新的方块
+    summon_new_block__engine(pstParam, &nControlFlag, COM_CONTROL);
+    
+    //设定起始时间
+    dwTimeCounterCOM = GetTickCount();
+  }
+
+  while (nControlFlag == CONTROL_FLAG_MAIN_LOOP_RUNNING)
+  {
+    //如果一个玩家的方块完毕了，session更新
+
+    //此处和COM的sessionending有潜在冲突，应该换成pstParam里面的一个全局标志位最好
+    /*if (nControlFlag == CONTROL_FLAG_MAIN_LOOP_SESSION_ENDING_PLAYER)*/
+    if (bIsSessionEndedPlayer == true)
     {
       nCurrentBlockPlayer = nNextBlockPlayer;
       switch_session_block__main_loop(pstParam, &nCurrentBlockPlayer,
-        &nNextBlockPlayer);
+        &nNextBlockPlayer, PLAYER_CONTROL);
       //(尝试)消行
-      clean_line__engine(pstParam);
+      clean_line__engine(pstParam, PLAYER_CONTROL);
 
       //召唤新的方块（玩家）
-      summon_new_block__engine(pstParam, &nControlFlag);
+      summon_new_block__engine(pstParam, &nControlFlag, PLAYER_CONTROL);
 
-      nControlFlag = CONTROL_FLAG_MAIN_LOOP_RUNNING;
+      bIsSessionEndedPlayer = false;
     }
 
-    //==如果一个方块完毕了，换下一个方块(电脑）    以后再加
-     
-    if (GetTickCount() - dwTimeCounter > 800)
+    //如果是人机对战模式，如果一个电脑的方块完毕了，session更新
+    if (pstParam->eStageFlag == STAGE_PLAY_VS_COM && bIsSessionEndedCOM == true)
     {
-      dwTimeCounter = GetTickCount();
-      move_down_block_player__engine(pstParam, &nControlFlag);
+      nCurrentBlockCOM = nNextBlockCOM;
+      switch_session_block__main_loop(pstParam, &nCurrentBlockCOM,
+        &nNextBlockCOM, COM_CONTROL);
+      //(尝试)消行
+      clean_line__engine(pstParam, COM_CONTROL);
+
+      //召唤新的方块（玩家）
+      summon_new_block__engine(pstParam, &nControlFlag, COM_CONTROL);
+
+      bIsSessionEndedCOM = false;
+    }
+     
+    //方块随时间进行而自动下落
+    if (GetTickCount() - dwTimeCounterPlayer > 800)
+    {
+      dwTimeCounterPlayer = GetTickCount();
+      move_down_block__engine(pstParam, &nControlFlag, &bIsSessionEndedPlayer,
+        &bIsSessionEndedCOM, PLAYER_CONTROL);
+    }
+
+    //如果是人机对战模式,电脑方框随时间进行而自动下落
+    if (pstParam->eStageFlag == STAGE_PLAY_VS_COM &&
+      GetTickCount() - dwTimeCounterCOM > 800)
+    {
+      dwTimeCounterCOM = GetTickCount();
+      move_down_block__engine(pstParam, &nControlFlag, &bIsSessionEndedPlayer,
+        &bIsSessionEndedCOM, COM_CONTROL);
     }
 
     if (_kbhit())
@@ -80,7 +134,8 @@ int tetris_loop__main_loop(Param *pstParam)
             move_right_block_player__engine(pstParam);
             break;
           case VK_DOWN:
-            move_down_block_player__engine(pstParam, &nControlFlag);
+            move_down_block__engine(pstParam, &nControlFlag,
+              &bIsSessionEndedPlayer, &bIsSessionEndedCOM, PLAYER_CONTROL);
             break;
           case VK_UP:
             rotate_block_player__engine(pstParam);
@@ -136,23 +191,20 @@ int tetris_loop__main_loop(Param *pstParam)
   
 
 static int switch_session_block__main_loop(Param *pstParam, int *pnCurrentBlock,
-                                           int *pnNextBlock)
+                 int *pnNextBlock, PlayerVSCOMControlFlag eFlag)
 {
   CustomizedBlock *pstTmp = NULL;
 
   //当前方块的资源释放
-  if (pstParam->pstFirstBlockElement != NULL)
-  {
-    free_current_block_element__chain_list_processor(pstParam);
-  }
+  free_current_block_element__chain_list_processor(pstParam, eFlag);
 
   //当前方块等于下一个方块
   *pnCurrentBlock = *pnNextBlock;
 
   //把当前所有方块元素加入链表(再次分配内存资源)
-  build_block_element_chain__data_processor(pstParam, *pnCurrentBlock);
+  build_block_element_chain__data_processor(pstParam, *pnCurrentBlock, eFlag);
   //链表构建完成后，再次处理链表元素中的pCenter成员
-  after_process_block_element_chain__data_processor(pstParam);
+  after_process_block_element_chain__data_processor(pstParam, eFlag);
 
   //随机下一个方块
   *pnNextBlock = get_a_random_block(pstParam);
@@ -161,10 +213,20 @@ static int switch_session_block__main_loop(Param *pstParam, int *pnCurrentBlock,
   pstTmp = pstParam->pstFastArray[*pnNextBlock];
 
   //把下一个方块在NextBlock区域打印出来
-  print_tetris_customize_blocks_ground__interface(
-    pstTmp->TetrisCustomizeBlocksSpace, 
-    INTERFACE_PLAY_SOLO_ANCHOR_POINT_NEXT_BLOCK_X * 2, 
-    INTERFACE_PLAY_SOLO_ANCHOR_POINT_NEXT_BLOCK_Y);
+  if (eFlag == PLAYER_CONTROL)
+  {
+    print_tetris_customize_blocks_ground__interface(
+      pstTmp->TetrisCustomizeBlocksSpace,
+      INTERFACE_PLAY_SOLO_ANCHOR_POINT_NEXT_BLOCK_X * 2,
+      INTERFACE_PLAY_SOLO_ANCHOR_POINT_NEXT_BLOCK_Y);
+  }
+  if (eFlag == COM_CONTROL)
+  {
+    print_tetris_customize_blocks_ground__interface(
+      pstTmp->TetrisCustomizeBlocksSpace,
+      INTERFACE_PLAYER_VS_COM_ANCHOR_POINT_NEXT_BLOCK_X * 2,
+      INTERFACE_PLAYER_VS_COM_ANCHOR_POINT_NEXT_BLOCK_Y);
+  }
 
   return 0;
 }

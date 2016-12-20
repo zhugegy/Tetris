@@ -20,6 +20,12 @@ enum CustomBlockFrequency {
   CUSTOMIZED_BLOCK_FREQUENCY_VERY_HIGH
 };
 
+//自定义人机对战控制标示符
+enum PlayerVSCOMControlFlag {
+	PLAYER_CONTROL = 1,
+	COM_CONTROL
+};
+
 //备忘：CUSTOMIZE_BLOCK别忘了释放（Param->pstCustomizedBlockNodes）
 enum ErrorMessages{
   ERROR_CUSTOMIZE_BLOCK_NODE_MALLOC,
@@ -71,8 +77,11 @@ typedef struct Param
 {
   StageList eStageFlag;
 
-  //游戏时的方块方阵空间
-  unsigned char TetrisPlaySpace[TETRIS_PLAY_SPACE_Y][TETRIS_PLAY_SPACE_X];
+  //游戏时的方块方阵空间(玩家)
+  unsigned char TetrisPlaySpacePlayer[TETRIS_PLAY_SPACE_Y][TETRIS_PLAY_SPACE_X];
+
+  //游戏时的方块方阵空间(电脑)
+  unsigned char TetrisPlaySpaceCOM[TETRIS_PLAY_SPACE_Y][TETRIS_PLAY_SPACE_X];
 
   //自定义模式的方块方阵空间
   unsigned char TetrisCustomizeBlocksSpace[TETRIS_CUSTOMIZE_BLOCKS_SPACE_Y]
@@ -87,7 +96,10 @@ typedef struct Param
   //存储方块地址的快捷数组
   CustomizedBlock *pstFastArray[MAX_BLOCK_NUM];
 
-  //存储当前方块中所有元素的链表（用于游戏中的上下左右操作）
-  BlockElement *pstFirstBlockElement;
+  //存储当前方块中所有元素的链表（用于游戏中的上下左右操作）(玩家)
+  BlockElement *pstFirstBlockElementPlayer;
+
+  //存储当前方块中所有元素的链表（用于游戏中的上下左右操作）(电脑)
+  BlockElement *pstFirstBlockElementCOM;
 
 }Param;

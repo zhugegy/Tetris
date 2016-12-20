@@ -418,7 +418,7 @@ int get_a_random_block(Param *pstParam)
 //把当前方块的所有元素加入链表
 //这个函数应该(最好)属于chain_list_processor.cpp，先不改了
 int build_block_element_chain__data_processor(Param *pstParam, 
-                                              int nCurrentBlock)
+                   int nCurrentBlock, PlayerVSCOMControlFlag eFlag)
 {
   unsigned char TetrisCustomizeBlocksSpaceTmp[TETRIS_CUSTOMIZE_BLOCKS_SPACE_Y]
   [TETRIS_CUSTOMIZE_BLOCKS_SPACE_X] = {0};
@@ -459,9 +459,17 @@ int build_block_element_chain__data_processor(Param *pstParam,
         stBlockElementTemplate.isCenter = 0;
       }
 
-      //将此元素插入链表
-      insert_block_element_node_into_chain__chain_list_processor(pstParam, 
-        &stBlockElementTemplate);
+      //将此元素插入链表,插入玩家的，或者电脑的链表
+      if (eFlag == PLAYER_CONTROL)
+      {
+        insert_player_block_element_node_into_chain__chain_list_processor(
+          pstParam, &stBlockElementTemplate);
+      }
+      if (eFlag == COM_CONTROL)
+      {
+        insert_COM_block_element_node_into_chain__chain_list_processor(
+          pstParam, &stBlockElementTemplate);
+      }
     }
   }
 
@@ -470,15 +478,28 @@ int build_block_element_chain__data_processor(Param *pstParam,
 
 //方块所有元素链表构建完成后，再次处理它，给每个元素的pCenter赋值
 //这个函数应该(最好)属于chain_list_processor.cpp，先不改了
-int after_process_block_element_chain__data_processor(Param *pstParam)
+int after_process_block_element_chain__data_processor(Param *pstParam,
+  PlayerVSCOMControlFlag eFlag)
 {
   //CenterBlockElement的作用：计算旋转时要用
   BlockElement *pstCenterBlockElement = NULL;
 
   BlockElement *pstTmp = NULL;
 
+  /*此处显得多余，但是为了避免误解，多定义一次。这是为了整合player和COM到一个函数。*/
+  BlockElement *pstTmpExtral = NULL;  
+
+  if (eFlag == PLAYER_CONTROL)
+  {
+    pstTmpExtral = pstParam->pstFirstBlockElementPlayer;
+  }
+  if (eFlag == COM_CONTROL)
+  {
+    pstTmpExtral = pstParam->pstFirstBlockElementCOM;
+  }
+
   //定位中心点的地址
-  for (pstTmp = pstParam->pstFirstBlockElement; pstTmp; pstTmp = pstTmp->pNext)
+  for (pstTmp = pstTmpExtral; pstTmp; pstTmp = pstTmp->pNext)
   {
     if (pstTmp->isCenter == 1)
     {
@@ -487,7 +508,7 @@ int after_process_block_element_chain__data_processor(Param *pstParam)
     }
   }
 
-  for (pstTmp = pstParam->pstFirstBlockElement; pstTmp; pstTmp = pstTmp->pNext)
+  for (pstTmp = pstTmpExtral; pstTmp; pstTmp = pstTmp->pNext)
   {
     pstTmp->pCenter = pstCenterBlockElement;
   }

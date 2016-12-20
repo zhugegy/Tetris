@@ -63,15 +63,18 @@ static int initialize_parameter(Param *pstParam)
   //初始化舞台
   //pstParam->eStageFlag = stage_main_menu;
   //debug
-  pstParam->eStageFlag = STAGE_PLAY_SOLO;
+  //pstParam->eStageFlag = STAGE_PLAY_SOLO;
   //pstParam->eStageFlag = STAGE_CUSTOMIZE_BLOCKS;
-  //pstParam->eStageFlag = STAGE_PLAY_VS_COM;
+  pstParam->eStageFlag = STAGE_PLAY_VS_COM;
 
 
+  //初始化俄罗斯方块方阵（玩家）
+  memset(pstParam->TetrisPlaySpacePlayer, 0, 
+    sizeof(pstParam->TetrisPlaySpacePlayer) * sizeof(char));
 
-  //初始化俄罗斯方块方阵（游戏时）
-  memset(pstParam->TetrisPlaySpace, 0, 
-    sizeof(pstParam->TetrisPlaySpace) * sizeof(char));
+  //初始化俄罗斯方块方阵（电脑）
+  memset(pstParam->TetrisPlaySpaceCOM, 0,
+	  sizeof(pstParam->TetrisPlaySpaceCOM) * sizeof(char));
 
   //初始化俄罗斯方块方阵（自定义方块模式）
   memset(pstParam->TetrisCustomizeBlocksSpace, 0,
@@ -100,7 +103,10 @@ static int initialize_parameter(Param *pstParam)
   pre_process_blocks__data_processor(pstParam);
 
   //初始化BlockElement链表
-  pstParam->pstFirstBlockElement = NULL;
+  pstParam->pstFirstBlockElementPlayer = NULL;
+
+  //初始化BlockElement链表
+  pstParam->pstFirstBlockElementCOM = NULL;
 
   return 0;
 }

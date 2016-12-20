@@ -49,6 +49,8 @@ int get_block_total_num__chain_list_processor(Param *pstParam)
 }
 
 //方块链表存入快捷数组
+/*(快捷数组存储了链表中元素的地址，方便以后的直接操作，而不用每次都遍历链表,20161219
+看代码的时候是这么猜测的，记不清最开始写这个代码的时候的思路了)*/
 int build_fast_array__chain_list_processor(Param *pstParam)
 {
   CustomizedBlock *pstTmp = NULL;
@@ -63,32 +65,73 @@ int build_fast_array__chain_list_processor(Param *pstParam)
   return 0;
 }
 
-//构建当前方块的BlockElement链表
-int insert_block_element_node_into_chain__chain_list_processor(
+//构建当前方块的BlockElement链表(玩家方块元素链表)
+int insert_player_block_element_node_into_chain__chain_list_processor(
   Param *pstParam, BlockElement *pstBlockElementTemplate)
 {
   BlockElement *pstTmp;
 
-  if (pstParam->pstFirstBlockElement == NULL)
+  if (pstParam->pstFirstBlockElementPlayer == NULL)
   {
-    pstParam->pstFirstBlockElement = 
+    pstParam->pstFirstBlockElementPlayer = 
       (BlockElement *) malloc(sizeof(BlockElement));
 
-    if (pstParam->pstFirstBlockElement == NULL)
+    if (pstParam->pstFirstBlockElementPlayer == NULL)
     {
       return ERROR_BLOCK_ELEMENT_NODE_MALLOC;
     }
 
     write_in_block_element_node__chain_list_processor(
-      pstParam->pstFirstBlockElement, pstBlockElementTemplate);
+      pstParam->pstFirstBlockElementPlayer, pstBlockElementTemplate);
 
   }
   else
   {
-    for (pstTmp = pstParam->pstFirstBlockElement; pstTmp->pNext; 
+    for (pstTmp = pstParam->pstFirstBlockElementPlayer; pstTmp->pNext; 
       pstTmp = pstTmp->pNext);
 
       pstTmp->pNext = (BlockElement *) malloc(sizeof(BlockElement));
+
+    if (pstTmp->pNext == NULL)
+    {
+      return ERROR_BLOCK_ELEMENT_NODE_MALLOC;
+    }
+
+    pstTmp = pstTmp->pNext;
+
+    write_in_block_element_node__chain_list_processor(pstTmp,
+      pstBlockElementTemplate);
+  }
+
+  return 0;
+}
+
+//构建当前方块的BlockElement链表(电脑方块元素链表)
+int insert_COM_block_element_node_into_chain__chain_list_processor(
+  Param *pstParam, BlockElement *pstBlockElementTemplate)
+{
+  BlockElement *pstTmp;
+
+  if (pstParam->pstFirstBlockElementCOM == NULL)
+  {
+    pstParam->pstFirstBlockElementCOM =
+      (BlockElement *) malloc(sizeof(BlockElement));
+
+    if (pstParam->pstFirstBlockElementCOM == NULL)
+    {
+      return ERROR_BLOCK_ELEMENT_NODE_MALLOC;
+    }
+
+    write_in_block_element_node__chain_list_processor(
+      pstParam->pstFirstBlockElementCOM, pstBlockElementTemplate);
+
+  }
+  else
+  {
+    for (pstTmp = pstParam->pstFirstBlockElementCOM; pstTmp->pNext;
+      pstTmp = pstTmp->pNext);
+
+    pstTmp->pNext = (BlockElement *) malloc(sizeof(BlockElement));
 
     if (pstTmp->pNext == NULL)
     {
@@ -118,12 +161,20 @@ static int write_in_block_element_node__chain_list_processor(
 }
 
 //释放当前方块元素资源
-int free_current_block_element__chain_list_processor(Param *pstParam)
+int free_current_block_element__chain_list_processor(Param *pstParam, 
+	PlayerVSCOMControlFlag eFlag)
 {
   BlockElement *pstTmp = NULL;
   BlockElement *pstNext = NULL;
 
-  pstTmp = pstParam->pstFirstBlockElement;
+  if (eFlag == PLAYER_CONTROL)
+  {
+	  pstTmp = pstParam->pstFirstBlockElementPlayer;
+  }
+  if (eFlag == COM_CONTROL)
+  {
+	  pstTmp = pstParam->pstFirstBlockElementCOM;
+  }
 
   while (pstTmp)
   {
@@ -134,7 +185,14 @@ int free_current_block_element__chain_list_processor(Param *pstParam)
     pstTmp = pstNext;
   }
 
-  pstParam->pstFirstBlockElement = NULL;
+  if (eFlag == PLAYER_CONTROL)
+  {
+	  pstParam->pstFirstBlockElementPlayer = NULL;
+  }
+  if (eFlag == COM_CONTROL)
+  {
+	  pstParam->pstFirstBlockElementCOM = NULL;
+  }
 
   return 0;
 }
