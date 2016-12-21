@@ -103,8 +103,8 @@ int tetris_loop__main_loop(Param *pstParam)
     if (GetTickCount() - dwTimeCounterPlayer > 800)
     {
       dwTimeCounterPlayer = GetTickCount();
-      move_down_block__engine(pstParam, &nControlFlag, &bIsSessionEndedPlayer,
-        &bIsSessionEndedCOM, PLAYER_CONTROL);
+      move_down_block__engine(pstParam, &nControlFlag, &bIsSessionEndedPlayer, 
+        PLAYER_CONTROL);
     }
 
     //如果是人机对战模式,电脑方框随时间进行而自动下落
@@ -112,8 +112,8 @@ int tetris_loop__main_loop(Param *pstParam)
       GetTickCount() - dwTimeCounterCOM > 800)
     {
       dwTimeCounterCOM = GetTickCount();
-      move_down_block__engine(pstParam, &nControlFlag, &bIsSessionEndedPlayer,
-        &bIsSessionEndedCOM, COM_CONTROL);
+      move_down_block__engine(pstParam, &nControlFlag, &bIsSessionEndedCOM, 
+        COM_CONTROL);
     }
 
     if (_kbhit())
@@ -135,7 +135,7 @@ int tetris_loop__main_loop(Param *pstParam)
             break;
           case VK_DOWN:
             move_down_block__engine(pstParam, &nControlFlag,
-              &bIsSessionEndedPlayer, &bIsSessionEndedCOM, PLAYER_CONTROL);
+              &bIsSessionEndedPlayer, PLAYER_CONTROL);
             break;
           case VK_UP:
             rotate_block__engine(pstParam, PLAYER_CONTROL);
@@ -144,7 +144,7 @@ int tetris_loop__main_loop(Param *pstParam)
             while (bIsSessionEndedPlayer == false)
             {
               move_down_block__engine(pstParam, &nControlFlag,
-                &bIsSessionEndedPlayer, &bIsSessionEndedCOM, PLAYER_CONTROL);
+                &bIsSessionEndedPlayer, PLAYER_CONTROL);
             }
             break;
           //COM_DEBUG:隐藏按键：可以控制电脑行为
@@ -156,7 +156,7 @@ int tetris_loop__main_loop(Param *pstParam)
             break;
           case VK_NUMPAD5:
             move_down_block__engine(pstParam, &nControlFlag,
-              &bIsSessionEndedPlayer, &bIsSessionEndedCOM, COM_CONTROL);
+              &bIsSessionEndedCOM, COM_CONTROL);
             break;
           case VK_NUMPAD8:
             rotate_block__engine(pstParam, COM_CONTROL);
@@ -165,7 +165,7 @@ int tetris_loop__main_loop(Param *pstParam)
             while (bIsSessionEndedCOM == false)
             {
               move_down_block__engine(pstParam, &nControlFlag,
-                &bIsSessionEndedPlayer, &bIsSessionEndedCOM, COM_CONTROL);
+                &bIsSessionEndedCOM, COM_CONTROL);
             }
             break;
           default:

@@ -105,8 +105,7 @@ int summon_new_block__engine(Param *pstParam, int *pnControlFlag,
 //方块下落(玩家专用。。暂时不兼容com,因为链表和数组都不一样（虽然格式一样）)
 //20161220现在兼容COM了
 int move_down_block__engine(Param *pstParam, int *pnControlFlag,
-   bool *pbIsSessionEndedPlayer, bool *pbIsSessionEndedCOM,
-   PlayerVSCOMControlFlag eFlag)
+   bool *pbIsSessionEnded, PlayerVSCOMControlFlag eFlag)
 {
   BlockElement *pstTmp = NULL;
 
@@ -130,18 +129,15 @@ int move_down_block__engine(Param *pstParam, int *pnControlFlag,
       pstTmp->stCoord.nX) >= 100)
     {
       //判断是否已经游戏结束，游戏结束则没有必要再刷新新的方块
-      if (*pnControlFlag != CONTROL_FLAG_MAIN_LOOP_GAME_OVER_PLAYER &&
-        *pnControlFlag != CONTROL_FLAG_MAIN_LOOP_GAME_OVER_COM)
+      //pnControlFlag的逻辑有点混乱，不过现在能正常运行，先不改
+      /*if (*pnControlFlag != CONTROL_FLAG_MAIN_LOOP_GAME_OVER_PLAYER &&
+        *pnControlFlag != CONTROL_FLAG_MAIN_LOOP_GAME_OVER_COM)*/
+      //20161221改了逻辑
+      if (*pnControlFlag == CONTROL_FLAG_MAIN_LOOP_RUNNING)
       {
         bLocalNewSessionFlag = true;
-        if (eFlag == PLAYER_CONTROL)
-        {
-          *pbIsSessionEndedPlayer = true;
-        }
-        if (eFlag == COM_CONTROL)
-        {
-          *pbIsSessionEndedCOM = true;
-        }
+        
+        *pbIsSessionEnded = true;
       }
     }
   }
