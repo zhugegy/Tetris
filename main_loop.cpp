@@ -138,7 +138,14 @@ int tetris_loop__main_loop(Param *pstParam)
               &bIsSessionEndedPlayer, &bIsSessionEndedCOM, PLAYER_CONTROL);
             break;
           case VK_UP:
-            rotate_block_player__engine(pstParam);
+            rotate_block__engine(pstParam, PLAYER_CONTROL);
+            break;
+          case VK_SPACE:
+            while (bIsSessionEndedPlayer == false)
+            {
+              move_down_block__engine(pstParam, &nControlFlag,
+                &bIsSessionEndedPlayer, &bIsSessionEndedCOM, PLAYER_CONTROL);
+            }
             break;
           //COM_DEBUG:隐藏按键：可以控制电脑行为
           case VK_NUMPAD4:
@@ -149,7 +156,17 @@ int tetris_loop__main_loop(Param *pstParam)
             break;
           case VK_NUMPAD5:
             move_down_block__engine(pstParam, &nControlFlag,
-              &bIsSessionEndedPlayer, &bIsSessionEndedCOM, COM_CONTROL);;
+              &bIsSessionEndedPlayer, &bIsSessionEndedCOM, COM_CONTROL);
+            break;
+          case VK_NUMPAD8:
+            rotate_block__engine(pstParam, COM_CONTROL);
+            break;
+          case VK_NUMPAD0:
+            while (bIsSessionEndedCOM == false)
+            {
+              move_down_block__engine(pstParam, &nControlFlag,
+                &bIsSessionEndedPlayer, &bIsSessionEndedCOM, COM_CONTROL);
+            }
             break;
           default:
             break;

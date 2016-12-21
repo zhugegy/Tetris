@@ -533,15 +533,23 @@ int move_right_block__engine(Param *pstParam, PlayerVSCOMControlFlag eFlag)
 }
 
 //方块旋转
-int rotate_block_player__engine(Param *pstParam)
+int rotate_block__engine(Param *pstParam, PlayerVSCOMControlFlag eFlag)
 {
   BlockElement *pstTmp = NULL;
 
   int nDestX = 0;
   int nDestY = 0;
 
+  BlockElement *pstTmpExtral = NULL;
+  unsigned char *chTmpArrayAddress = NULL;
+  int nCoordX = 0;
+  int nCoordY = 0;
+
+  decide_parameter_detail__engine(pstParam, &pstTmpExtral, &chTmpArrayAddress,
+    &nCoordX, &nCoordY, eFlag);
+
   //检测能否旋转
-  for (pstTmp = pstParam->pstFirstBlockElementPlayer; pstTmp; pstTmp = pstTmp->pNext)
+  for (pstTmp = pstTmpExtral; pstTmp; pstTmp = pstTmp->pNext)
   {
     //求旋转后的目标位置
     get_dest_coord__engine(pstTmp, &nDestX, &nDestY);
@@ -555,25 +563,28 @@ int rotate_block_player__engine(Param *pstParam)
       return 0;
     }
     //如果目标地点是墙，或者固化物
-    if (pstParam->TetrisPlaySpacePlayer[nDestY][nDestX] >= 100)
+    /*if (pstParam->TetrisPlaySpacePlayer[nDestY][nDestX] >= 100)*/
+    if (*(chTmpArrayAddress + nDestY * TETRIS_PLAY_SPACE_X + nDestX) >= 100)
     {
       return 0;
     }
   }
 
   
-  for (pstTmp = pstParam->pstFirstBlockElementPlayer; pstTmp; pstTmp = pstTmp->pNext)
+  for (pstTmp = pstTmpExtral; pstTmp; pstTmp = pstTmp->pNext)
   {
     //赋值1.背景数组数值的改变元素所在位置赋值空地
-    pstParam->TetrisPlaySpacePlayer[pstTmp->stCoord.nY][pstTmp->stCoord.nX] =
-      SPACE_TYPE(pstTmp->stCoord.nX);
+    /*pstParam->TetrisPlaySpacePlayer[pstTmp->stCoord.nY][pstTmp->stCoord.nX] =
+      SPACE_TYPE(pstTmp->stCoord.nX);*/
+    *(chTmpArrayAddress + pstTmp->stCoord.nY * TETRIS_PLAY_SPACE_X + 
+      pstTmp->stCoord.nX) = SPACE_TYPE(pstTmp->stCoord.nX);
     //画图1.元素所在位置画空地
     switch (SPACE_TYPE(pstTmp->stCoord.nX))
     {
     case SPACE_VALUE_TYPE_A:
       print_element__interface(
-        (pstTmp->stCoord.nX + INTERFACE_PLAY_SOLO_ANCHOR_POINT_TETRIS_SPACE_X) * 2,
-        pstTmp->stCoord.nY + INTERFACE_PLAY_SOLO_ANCHOR_POINT_TETRIS_SPACE_Y,
+        (pstTmp->stCoord.nX + nCoordX) * 2,
+        pstTmp->stCoord.nY + nCoordY,
         INTERFACE_SPACE_FIGURE,
         INTERFACE_SPACE_COLOR_TYPE_A);
       break;
@@ -590,19 +601,22 @@ int rotate_block_player__engine(Param *pstParam)
   }
 
   //赋值：改变方块元素坐标
-  for (pstTmp = pstParam->pstFirstBlockElementPlayer; pstTmp; pstTmp = pstTmp->pNext)
+  for (pstTmp = pstTmpExtral; pstTmp; pstTmp = pstTmp->pNext)
   {
     get_dest_coord__engine(pstTmp, &nDestX, &nDestY);
     pstTmp->stCoord.nX = nDestX;
     pstTmp->stCoord.nY = nDestY;
   }
 
-  for (pstTmp = pstParam->pstFirstBlockElementPlayer; pstTmp; pstTmp = pstTmp->pNext)
+  for (pstTmp = pstTmpExtral; pstTmp; pstTmp = pstTmp->pNext)
   {
     //赋值2.背景数组数值的改变元素所在位置赋值当前元素的值
-    pstParam->TetrisPlaySpacePlayer[pstTmp->stCoord.nY][pstTmp->stCoord.nX] = 
-      pstTmp->nValue;
+    /*pstParam->TetrisPlaySpacePlayer[pstTmp->stCoord.nY][pstTmp->stCoord.nX] = 
+      pstTmp->nValue;*/
+    *(chTmpArrayAddress + pstTmp->stCoord.nY * TETRIS_PLAY_SPACE_X +
+      pstTmp->stCoord.nX) = pstTmp->nValue;
     //画图2.元素所在位置画空地
+    //20161221应该是画方块，估计是当时的笔误（复制过来忘了改）
     switch (pstTmp->nValue)
     {
     case INTERFACE_BLOCK_COLOR_BLACK_CYAN:
@@ -613,8 +627,8 @@ int rotate_block_player__engine(Param *pstParam)
     case INTERFACE_BLOCK_COLOR_BLACK_PURPLE:
     case INTERFACE_BLOCK_COLOR_BLACK_RED:
       print_element__interface(
-        (pstTmp->stCoord.nX + INTERFACE_PLAY_SOLO_ANCHOR_POINT_TETRIS_SPACE_X) * 2,
-        pstTmp->stCoord.nY + INTERFACE_PLAY_SOLO_ANCHOR_POINT_TETRIS_SPACE_Y,
+        (pstTmp->stCoord.nX + nCoordX) * 2,
+        pstTmp->stCoord.nY + nCoordY,
         INTERFACE_BLOCK_FIGURE,
         pstTmp->nValue);
       break;
