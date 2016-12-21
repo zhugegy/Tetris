@@ -266,16 +266,27 @@ int move_down_block__engine(Param *pstParam, int *pnControlFlag,
 }
 
 //方块左移(玩家专用。。暂时不兼容com,因为链表和数组都不一样（虽然格式一样）)
-int move_left_block_player__engine(Param *pstParam)
+//20161221现在支持COM
+int move_left_block__engine(Param *pstParam, PlayerVSCOMControlFlag eFlag)
 {
   BlockElement *pstTmp = NULL;
 
+  BlockElement *pstTmpExtral = NULL;
+  unsigned char *chTmpArrayAddress = NULL;
+  int nCoordX = 0;
+  int nCoordY = 0;
+
+  decide_parameter_detail__engine(pstParam, &pstTmpExtral, &chTmpArrayAddress,
+    &nCoordX, &nCoordY, eFlag);
+
   //检测能否成功向左移动
-  for (pstTmp = pstParam->pstFirstBlockElementPlayer; pstTmp; pstTmp = pstTmp->pNext)
+  for (pstTmp = pstTmpExtral; pstTmp; pstTmp = pstTmp->pNext)
   {
     //任何一个元素左面是墙或者已固化的方块（value >= 100），就不能移动了
-    if (pstParam->TetrisPlaySpacePlayer[pstTmp->stCoord.nY][pstTmp->stCoord.nX - 1] 
-    >= 100)
+    /*if (pstParam->TetrisPlaySpacePlayer[pstTmp->stCoord.nY][pstTmp->stCoord.nX - 1] 
+    >= 100)*/
+    if (*(chTmpArrayAddress + pstTmp->stCoord.nY * TETRIS_PLAY_SPACE_X + 
+        pstTmp->stCoord.nX - 1) >= 100)
     {
       //返回，什么也不做
       return 0;
@@ -283,37 +294,47 @@ int move_left_block_player__engine(Param *pstParam)
   }
 
   //给尾巴赋值,为以后的工作做准备
-  for (pstTmp = pstParam->pstFirstBlockElementPlayer; pstTmp; pstTmp = pstTmp->pNext)
+  for (pstTmp = pstTmpExtral; pstTmp; pstTmp = pstTmp->pNext)
   {
     //尾巴就是它右面的值
-    if (pstParam->TetrisPlaySpacePlayer[pstTmp->stCoord.nY][pstTmp->stCoord.nX + 1] >=
-      100)
+    /*if (pstParam->TetrisPlaySpacePlayer[pstTmp->stCoord.nY][pstTmp->stCoord.nX + 1] >=
+      100)*/
+    if (*(chTmpArrayAddress + pstTmp->stCoord.nY * TETRIS_PLAY_SPACE_X +
+      pstTmp->stCoord.nX + 1) >= 100)
     {
       //如果右边紧靠墙或者固化物
       pstTmp->nTailValue = SPACE_TYPE(pstTmp->stCoord.nX + 1);
     }
     else
     {
+      /*pstTmp->nTailValue = 
+        pstParam->TetrisPlaySpacePlayer[pstTmp->stCoord.nY][pstTmp->stCoord.nX + 1];*/
       pstTmp->nTailValue = 
-        pstParam->TetrisPlaySpacePlayer[pstTmp->stCoord.nY][pstTmp->stCoord.nX + 1];
+        *(chTmpArrayAddress + pstTmp->stCoord.nY * TETRIS_PLAY_SPACE_X + 
+          pstTmp->stCoord.nX + 1);
     }
   }
 
   //赋值1.方块元素坐标左移
-  for (pstTmp = pstParam->pstFirstBlockElementPlayer; pstTmp; pstTmp = pstTmp->pNext)
+  for (pstTmp = pstTmpExtral; pstTmp; pstTmp = pstTmp->pNext)
   {
     pstTmp->stCoord.nX -= 1;
   }
 
   //赋值2.背景数组数值的改变
-  for (pstTmp = pstParam->pstFirstBlockElementPlayer; pstTmp; pstTmp = pstTmp->pNext)
+  for (pstTmp = pstTmpExtral; pstTmp; pstTmp = pstTmp->pNext)
   {
     //元素所在位置赋值自身value
-    pstParam->TetrisPlaySpacePlayer[pstTmp->stCoord.nY][pstTmp->stCoord.nX] =
-      pstTmp->nValue;
+    /*pstParam->TetrisPlaySpacePlayer[pstTmp->stCoord.nY][pstTmp->stCoord.nX] =
+      pstTmp->nValue;*/
+    *(chTmpArrayAddress + pstTmp->stCoord.nY * TETRIS_PLAY_SPACE_X +
+      pstTmp->stCoord.nX) = pstTmp->nValue;
+
 
     //元素右面赋值尾巴的value
     //两种颜色空地数值互换
+    //SPACE_VALUE_TYPE_A 和 SPACE_VALUE_TYPE_B 其实是一样的。
+    //他们原本是不一样，但是因为显示不方便的原因，改成了一样的。
     if (pstTmp->nTailValue == SPACE_VALUE_TYPE_A)
     {
       pstTmp->nTailValue = SPACE_VALUE_TYPE_B;
@@ -323,20 +344,22 @@ int move_left_block_player__engine(Param *pstParam)
       pstTmp->nTailValue = SPACE_VALUE_TYPE_A;
     }
 
-    pstParam->TetrisPlaySpacePlayer[pstTmp->stCoord.nY][pstTmp->stCoord.nX + 1] =
-      pstTmp->nTailValue;
+    /*pstParam->TetrisPlaySpacePlayer[pstTmp->stCoord.nY][pstTmp->stCoord.nX + 1] =
+      pstTmp->nTailValue;*/
+    *(chTmpArrayAddress + pstTmp->stCoord.nY * TETRIS_PLAY_SPACE_X +
+      pstTmp->stCoord.nX + 1) = pstTmp->nTailValue;
   }
 
   //画图
-  for (pstTmp = pstParam->pstFirstBlockElementPlayer; pstTmp; pstTmp = pstTmp->pNext)
+  for (pstTmp = pstTmpExtral; pstTmp; pstTmp = pstTmp->pNext)
   {
     //画右面的（尾巴）
     switch (pstTmp->nTailValue)
     {
     case SPACE_VALUE_TYPE_A:
       print_element__interface(
-        (pstTmp->stCoord.nX + 1 + INTERFACE_PLAY_SOLO_ANCHOR_POINT_TETRIS_SPACE_X) * 2,
-        pstTmp->stCoord.nY + INTERFACE_PLAY_SOLO_ANCHOR_POINT_TETRIS_SPACE_Y,
+        (pstTmp->stCoord.nX + 1 + nCoordX) * 2,
+        pstTmp->stCoord.nY + nCoordY,
         INTERFACE_SPACE_FIGURE,
         INTERFACE_SPACE_COLOR_TYPE_A);
       break;
@@ -355,8 +378,8 @@ int move_left_block_player__engine(Param *pstParam)
     case INTERFACE_BLOCK_COLOR_BLACK_PURPLE:
     case INTERFACE_BLOCK_COLOR_BLACK_RED:
       print_element__interface(
-        (pstTmp->stCoord.nX + 1 + INTERFACE_PLAY_SOLO_ANCHOR_POINT_TETRIS_SPACE_X) * 2,
-        pstTmp->stCoord.nY + INTERFACE_PLAY_SOLO_ANCHOR_POINT_TETRIS_SPACE_Y,
+        (pstTmp->stCoord.nX + 1 + nCoordX) * 2,
+        pstTmp->stCoord.nY + nCoordY,
         INTERFACE_BLOCK_FIGURE,
         pstTmp->nTailValue);
       break;
@@ -367,8 +390,8 @@ int move_left_block_player__engine(Param *pstParam)
 
     //画现在的
     print_element__interface(
-      (pstTmp->stCoord.nX + INTERFACE_PLAY_SOLO_ANCHOR_POINT_TETRIS_SPACE_X) * 2,
-      pstTmp->stCoord.nY + INTERFACE_PLAY_SOLO_ANCHOR_POINT_TETRIS_SPACE_Y,
+      (pstTmp->stCoord.nX + nCoordX) * 2,
+      pstTmp->stCoord.nY + nCoordY,
       INTERFACE_BLOCK_FIGURE,
       pstTmp->nValue);
   }
@@ -379,16 +402,27 @@ int move_left_block_player__engine(Param *pstParam)
 //方块右移(玩家专用。。暂时不兼容com,因为链表和数组都不一样（虽然格式一样）)
 //其实也简单，后面加个判断Player还是COM的参数，然后pstParam->pstFirstBlockElement 和
 //pstParam->TetrisPlaySpace switchcase 独立赋值给变量，先不弄，或者这两个直接参数给
-int move_right_block_player__engine(Param *pstParam)
+//20161221现在已兼容COM
+int move_right_block__engine(Param *pstParam, PlayerVSCOMControlFlag eFlag)
 {
   BlockElement *pstTmp = NULL;
 
+  BlockElement *pstTmpExtral = NULL;
+  unsigned char *chTmpArrayAddress = NULL;
+  int nCoordX = 0;
+  int nCoordY = 0;
+
+  decide_parameter_detail__engine(pstParam, &pstTmpExtral, &chTmpArrayAddress,
+    &nCoordX, &nCoordY, eFlag);
+
   //检测能否成功向右移动
-  for (pstTmp = pstParam->pstFirstBlockElementPlayer; pstTmp; pstTmp = pstTmp->pNext)
+  for (pstTmp = pstTmpExtral; pstTmp; pstTmp = pstTmp->pNext)
   {
     //任何一个元素右面是墙或者已固化的方块（value >= 100），就不能移动了
-    if (pstParam->TetrisPlaySpacePlayer[pstTmp->stCoord.nY][pstTmp->stCoord.nX + 1] 
-    >= 100)
+    /*if (pstParam->TetrisPlaySpacePlayer[pstTmp->stCoord.nY][pstTmp->stCoord.nX + 1] 
+    >= 100)*/
+    if (*(chTmpArrayAddress + pstTmp->stCoord.nY * TETRIS_PLAY_SPACE_X +
+      pstTmp->stCoord.nX + 1) >= 100)
     {
       //返回，什么也不做
       return 0;
@@ -396,34 +430,41 @@ int move_right_block_player__engine(Param *pstParam)
   }
 
   //给尾巴赋值,为以后的工作做准备
-  for (pstTmp = pstParam->pstFirstBlockElementPlayer; pstTmp; pstTmp = pstTmp->pNext)
+  for (pstTmp = pstTmpExtral; pstTmp; pstTmp = pstTmp->pNext)
   {
     //尾巴就是它左面的值
-    if (pstParam->TetrisPlaySpacePlayer[pstTmp->stCoord.nY][pstTmp->stCoord.nX - 1] >=
-      100)
+    /*if (pstParam->TetrisPlaySpacePlayer[pstTmp->stCoord.nY][pstTmp->stCoord.nX - 1] >=
+      100)*/
+    if (*(chTmpArrayAddress + pstTmp->stCoord.nY * TETRIS_PLAY_SPACE_X +
+      pstTmp->stCoord.nX - 1) >= 100)
     {
       //如果左边紧靠墙或者固化物
       pstTmp->nTailValue = SPACE_TYPE(pstTmp->stCoord.nX - 1);
     }
     else
     {
-      pstTmp->nTailValue = 
-        pstParam->TetrisPlaySpacePlayer[pstTmp->stCoord.nY][pstTmp->stCoord.nX - 1];
+      /*pstTmp->nTailValue = 
+        pstParam->TetrisPlaySpacePlayer[pstTmp->stCoord.nY][pstTmp->stCoord.nX - 1];*/
+      pstTmp->nTailValue =
+        *(chTmpArrayAddress + pstTmp->stCoord.nY * TETRIS_PLAY_SPACE_X +
+          pstTmp->stCoord.nX - 1);
     }
   }
 
   //赋值1.方块元素坐标右移
-  for (pstTmp = pstParam->pstFirstBlockElementPlayer; pstTmp; pstTmp = pstTmp->pNext)
+  for (pstTmp = pstTmpExtral; pstTmp; pstTmp = pstTmp->pNext)
   {
     pstTmp->stCoord.nX += 1;
   }
 
   //赋值2.背景数组数值的改变
-  for (pstTmp = pstParam->pstFirstBlockElementPlayer; pstTmp; pstTmp = pstTmp->pNext)
+  for (pstTmp = pstTmpExtral; pstTmp; pstTmp = pstTmp->pNext)
   {
     //元素所在位置赋值自身value
-    pstParam->TetrisPlaySpacePlayer[pstTmp->stCoord.nY][pstTmp->stCoord.nX] =
-      pstTmp->nValue;
+    /*pstParam->TetrisPlaySpacePlayer[pstTmp->stCoord.nY][pstTmp->stCoord.nX] =
+      pstTmp->nValue;*/
+    *(chTmpArrayAddress + pstTmp->stCoord.nY * TETRIS_PLAY_SPACE_X +
+      pstTmp->stCoord.nX) = pstTmp->nValue;
 
     //元素左面赋值尾巴的value
     //两种颜色空地数值互换
@@ -436,20 +477,22 @@ int move_right_block_player__engine(Param *pstParam)
       pstTmp->nTailValue = SPACE_VALUE_TYPE_A;
     }
 
-    pstParam->TetrisPlaySpacePlayer[pstTmp->stCoord.nY][pstTmp->stCoord.nX - 1] =
-      pstTmp->nTailValue;
+    /*pstParam->TetrisPlaySpacePlayer[pstTmp->stCoord.nY][pstTmp->stCoord.nX - 1] =
+      pstTmp->nTailValue;*/
+    *(chTmpArrayAddress + pstTmp->stCoord.nY * TETRIS_PLAY_SPACE_X +
+      pstTmp->stCoord.nX - 1) = pstTmp->nTailValue;
   }
 
   //画图
-  for (pstTmp = pstParam->pstFirstBlockElementPlayer; pstTmp; pstTmp = pstTmp->pNext)
+  for (pstTmp = pstTmpExtral; pstTmp; pstTmp = pstTmp->pNext)
   {
     //画左面的（尾巴）
     switch (pstTmp->nTailValue)
     {
     case SPACE_VALUE_TYPE_A:
       print_element__interface(
-        (pstTmp->stCoord.nX - 1 + INTERFACE_PLAY_SOLO_ANCHOR_POINT_TETRIS_SPACE_X) * 2,
-        pstTmp->stCoord.nY + INTERFACE_PLAY_SOLO_ANCHOR_POINT_TETRIS_SPACE_Y,
+        (pstTmp->stCoord.nX - 1 + nCoordX) * 2,
+        pstTmp->stCoord.nY + nCoordY,
         INTERFACE_SPACE_FIGURE,
         INTERFACE_SPACE_COLOR_TYPE_A);
       break;
@@ -468,8 +511,8 @@ int move_right_block_player__engine(Param *pstParam)
     case INTERFACE_BLOCK_COLOR_BLACK_PURPLE:
     case INTERFACE_BLOCK_COLOR_BLACK_RED:
       print_element__interface(
-        (pstTmp->stCoord.nX - 1 + INTERFACE_PLAY_SOLO_ANCHOR_POINT_TETRIS_SPACE_X) * 2,
-        pstTmp->stCoord.nY + INTERFACE_PLAY_SOLO_ANCHOR_POINT_TETRIS_SPACE_Y,
+        (pstTmp->stCoord.nX - 1 + nCoordX) * 2,
+        pstTmp->stCoord.nY + nCoordY,
         INTERFACE_BLOCK_FIGURE,
         pstTmp->nTailValue);
       break;
@@ -480,8 +523,8 @@ int move_right_block_player__engine(Param *pstParam)
 
     //画现在的
     print_element__interface(
-      (pstTmp->stCoord.nX + INTERFACE_PLAY_SOLO_ANCHOR_POINT_TETRIS_SPACE_X) * 2,
-      pstTmp->stCoord.nY + INTERFACE_PLAY_SOLO_ANCHOR_POINT_TETRIS_SPACE_Y,
+      (pstTmp->stCoord.nX + nCoordX) * 2,
+      pstTmp->stCoord.nY + nCoordY,
       INTERFACE_BLOCK_FIGURE,
       pstTmp->nValue);
   }
@@ -781,13 +824,15 @@ int clean_line__engine(Param *pstParam, PlayerVSCOMControlFlag eFlag)
   int nLineNumber = -1;
 
   //检测是否有可以消除的行
-  nLineNumber = get_the_line_at_bottom_to_clean__data_processor(pstParam, eFlag);
+  nLineNumber = get_the_line_at_bottom_to_clean__data_processor(pstParam, 
+    eFlag);
 
   while (nLineNumber != -1)
   {
     clean_specific_line(pstParam, nLineNumber, eFlag);
 	//可以在此处添加得分相关代码
-    nLineNumber = get_the_line_at_bottom_to_clean__data_processor(pstParam, eFlag);
+    nLineNumber = get_the_line_at_bottom_to_clean__data_processor(pstParam, 
+      eFlag);
   }
 
   return 0;

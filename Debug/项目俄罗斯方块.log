@@ -1,12 +1,4 @@
-﻿  engine.cpp
-  data_processor.cpp
-  Generating Code...
-  Compiling...
-  play_vs_com.cpp
-  play_solo.cpp
-  main_loop.cpp
-  main.cpp
-  customize_blocks.cpp
-  Generating Code...
+﻿  main_loop.cpp
+cl : Command line warning D9028: minimal rebuild failure, reverting to normal build
   项目俄罗斯方块.vcxproj -> E:\Grtd\项目\tetris\Debug\项目俄罗斯方块.exe
   项目俄罗斯方块.vcxproj -> E:\Grtd\项目\tetris\Debug\项目俄罗斯方块.pdb (Full PDB)

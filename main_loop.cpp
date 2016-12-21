@@ -128,10 +128,10 @@ int tetris_loop__main_loop(Param *pstParam)
           switch (irBuf[k].Event.KeyEvent.wVirtualKeyCode)
           {
           case VK_LEFT:
-            move_left_block_player__engine(pstParam);
+            move_left_block__engine(pstParam, PLAYER_CONTROL);
             break;
           case VK_RIGHT:
-            move_right_block_player__engine(pstParam);
+            move_right_block__engine(pstParam, PLAYER_CONTROL);
             break;
           case VK_DOWN:
             move_down_block__engine(pstParam, &nControlFlag,
@@ -139,6 +139,17 @@ int tetris_loop__main_loop(Param *pstParam)
             break;
           case VK_UP:
             rotate_block_player__engine(pstParam);
+            break;
+          //COM_DEBUG:隐藏按键：可以控制电脑行为
+          case VK_NUMPAD4:
+            move_left_block__engine(pstParam, COM_CONTROL);
+            break;
+          case VK_NUMPAD6:
+            move_right_block__engine(pstParam, COM_CONTROL);
+            break;
+          case VK_NUMPAD5:
+            move_down_block__engine(pstParam, &nControlFlag,
+              &bIsSessionEndedPlayer, &bIsSessionEndedCOM, COM_CONTROL);;
             break;
           default:
             break;
