@@ -3,6 +3,8 @@
 
 #include "interface.h"
 #include "data_processor.h"
+#include "COM_control_AI.h"
+#include "COM_control_AI_1.h"
 
 static int get_quadrant_type_for_rotation__engine(int nRelativeCoordX, 
                                                   int nRelativeCoordY);
@@ -14,12 +16,13 @@ static int get_relative_coord_after_rotation__engine(int nQudrantType,
                                                      int nDistance,
                                                      int nAlignCoordX, int nAlignCoordY, 
                                                      int *pnRelativeCoordX, int *pnRelativeCoordY);
-static int get_dest_coord__engine(BlockElement *pstObj, int *pnDestX, int *pnDestY);
 static int clean_specific_line(Param *pstParam, int nLineNumber,
   PlayerVSCOMControlFlag eFlag);
 static int decide_parameter_detail__engine(Param *pstParam,
   BlockElement **ppstBlockElement, unsigned char **ppchArrayAddress,
   int *pnCoordX, int *pnCoordY, PlayerVSCOMControlFlag eFlag);
+static int get_dest_coord__engine(BlockElement *pstObj, int *pnDestX, int *pnDestY);
+
 
 /*
 //召唤新方块
@@ -66,6 +69,24 @@ int summon_new_block__engine(Param *pstParam, int *pnControlFlag,
   unsigned char *chTmpArrayAddress = NULL;
   int nCoordX = 0;
   int nCoordY = 0;
+
+  /*//debug 20161225 测试AI
+  int nAIx = -1;
+  int nAIy = -1;
+  int nAIr = -1;
+  int nResult = -1;
+
+  //debug 20161225 测试AI
+  if (eFlag == COM_CONTROL)
+  {
+  nResult = get_the_best_rotate_and_coord__COM_control_AI(pstParam, &nAIx, &nAIy, &nAIr);
+  }*/
+
+  //如果是电脑操控，把操作指令序列写入MessageContainer.
+  if (eFlag == COM_CONTROL)
+  {
+    decide_control_list__COM_control_AI_1(pstParam);
+  }
 
   decide_parameter_detail__engine(pstParam, &pstTmpExtral, &chTmpArrayAddress,
     &nCoordX, &nCoordY, eFlag);
@@ -662,6 +683,49 @@ static int get_dest_coord__engine(BlockElement *pstObj, int *pnDestX, int *pnDes
 
   //求得此点的象限类型
   nQuadrantType = get_quadrant_type_for_rotation__engine(nRelativeCoordX, 
+    nRelativeCoordY);
+
+  //求得此点的旋转基准点
+  get_the_align_coord__engine(nRelativeCoordX, nRelativeCoordY, nQuadrantType,
+    &nAlignCoordX, &nAlignCoordY, &nDistanceToAlignCoord);
+
+  //开始旋转，求得此点旋转后的0,0坐标
+  get_relative_coord_after_rotation__engine(nQuadrantType, nDistanceToAlignCoord,
+    nAlignCoordX, nAlignCoordY, &nRelativeCoordX, &nRelativeCoordY);
+
+  //根据现在的0,0坐标，反推出目的地坐标
+  *pnDestX = pstObj->pCenter->stCoord.nX - nRelativeCoordX;
+  *pnDestY = pstObj->pCenter->stCoord.nY - nRelativeCoordY;
+
+  return 0;
+}
+
+int get_dest_coord_for_COM_control_AI__engine(BlockElement *pstObj, 
+  int *pnDestX, int *pnDestY)
+{
+  //先把整体移动到0,0坐标系，这两个变量用来求得移动需要的位移
+  int nShiftDistanceX = 0;
+  int nShiftDistanceY = 0;
+  //此点在0,0坐标系里的坐标
+  int nRelativeCoordX = 0;
+  int nRelativeCoordY = 0;
+  //此点的象限类型
+  int nQuadrantType = 0;
+  //此点的旋转基准点
+  int nAlignCoordX = 0;
+  int nAlignCoordY = 0;
+  int nDistanceToAlignCoord = 0;
+
+  //求移动到0,0坐标系需要的整体位移
+  nShiftDistanceX = 0 - pstObj->pCenter->stCoord.nX;
+  nShiftDistanceY = 0 - pstObj->pCenter->stCoord.nY;
+
+  //求得此点在0,0坐标系里的坐标
+  nRelativeCoordX = pstObj->stCoordAItmp.nX + nShiftDistanceX;
+  nRelativeCoordY = pstObj->stCoordAItmp.nY + nShiftDistanceY;
+
+  //求得此点的象限类型
+  nQuadrantType = get_quadrant_type_for_rotation__engine(nRelativeCoordX,
     nRelativeCoordY);
 
   //求得此点的旋转基准点

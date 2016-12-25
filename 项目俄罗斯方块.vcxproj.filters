@@ -63,6 +63,18 @@
     <ClInclude Include="play_vs_com.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="MessageContainer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="COM_control_list.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="COM_control_AI_1.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="COM_control_AI.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -99,6 +111,15 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="play_vs_com.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MessageContainer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="COM_control_AI_1.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="COM_control_AI.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

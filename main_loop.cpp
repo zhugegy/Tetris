@@ -5,6 +5,8 @@
 #include "interface.h"
 #include "chain_list_processor.h"
 #include "engine.h"
+#include "COM_control_list.h"
+
 
 #include <conio.h>
 
@@ -26,6 +28,10 @@ int tetris_loop__main_loop(Param *pstParam)
   int nNextBlockCOM = 0;
   DWORD dwTimeCounterCOM = 0;
   bool bIsSessionEndedCOM = false;
+
+  //电脑AI的操作间隔计时器
+  DWORD dwTimeCounterCOMAI = 0;
+  int nCOMAICmd = 0;
 
   unsigned int k = 0;    //用户输入(事件)计数
   //获取输入句柄
@@ -174,6 +180,173 @@ int tetris_loop__main_loop(Param *pstParam)
         }
       }
     }
+
+    //如果是人机对战模式，读取MessageContainer的指令序列（AI指令）
+    if (pstParam->eStageFlag == STAGE_PLAY_VS_COM &&
+      GetTickCount() - dwTimeCounterCOMAI > 400)
+    {
+      dwTimeCounterCOMAI = GetTickCount();
+      nCOMAICmd = pstParam->COMControlMsg.read_message();
+      //翻译并执行
+      //translate_COM_AI_cmd__COM_control_AI(pstParam, nCOMAICmd);
+      switch (nCOMAICmd)
+      {
+      case COM_CONTROL_DEFAULT:
+        //什么都不做
+        move_down_block__engine(pstParam, &nControlFlag,
+          &bIsSessionEndedCOM, COM_CONTROL);
+        break;
+      case COM_CONTROL_ROTATE:
+        rotate_block__engine(pstParam, COM_CONTROL);
+        break;
+      case COM_CONTROL_MOVE_LEFT:
+        move_left_block__engine(pstParam, COM_CONTROL);
+        break;
+      case COM_CONTROL_MOVE_RIGHT:
+        move_right_block__engine(pstParam, COM_CONTROL);
+        break;
+      case COM_CONTROL_WAIT_TILL_LINE_0:
+        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 0)
+        {
+          pstParam->COMControlMsg.backwards_reading_postion();
+        }
+        break;
+      case COM_CONTROL_WAIT_TILL_LINE_1:
+        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 1)
+        {
+          pstParam->COMControlMsg.backwards_reading_postion();
+        }
+        break;
+      case COM_CONTROL_WAIT_TILL_LINE_2:
+        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 2)
+        {
+          pstParam->COMControlMsg.backwards_reading_postion();
+        }
+        break;
+      case COM_CONTROL_WAIT_TILL_LINE_3:
+        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 3)
+        {
+          pstParam->COMControlMsg.backwards_reading_postion();
+        }
+        break;
+      case COM_CONTROL_WAIT_TILL_LINE_4:
+        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 4)
+        {
+          pstParam->COMControlMsg.backwards_reading_postion();
+        }
+        break;
+      case COM_CONTROL_WAIT_TILL_LINE_5:
+        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 5)
+        {
+          pstParam->COMControlMsg.backwards_reading_postion();
+        }
+        break;
+      case COM_CONTROL_WAIT_TILL_LINE_6:
+        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 6)
+        {
+          pstParam->COMControlMsg.backwards_reading_postion();
+        }
+        break;
+      case COM_CONTROL_WAIT_TILL_LINE_7:
+        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 7)
+        {
+          pstParam->COMControlMsg.backwards_reading_postion();
+        }
+        break;
+      case COM_CONTROL_WAIT_TILL_LINE_8:
+        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 8)
+        {
+          pstParam->COMControlMsg.backwards_reading_postion();
+        }
+        break;
+      case COM_CONTROL_WAIT_TILL_LINE_9:
+        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 9)
+        {
+          pstParam->COMControlMsg.backwards_reading_postion();
+        }
+        break;
+      case COM_CONTROL_WAIT_TILL_LINE_10:
+        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 10)
+        {
+          pstParam->COMControlMsg.backwards_reading_postion();
+        }
+        break;
+      case COM_CONTROL_WAIT_TILL_LINE_11:
+        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 11)
+        {
+          pstParam->COMControlMsg.backwards_reading_postion();
+        }
+        break;
+      case COM_CONTROL_WAIT_TILL_LINE_12:
+        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 12)
+        {
+          pstParam->COMControlMsg.backwards_reading_postion();
+        }
+        break;
+      case COM_CONTROL_WAIT_TILL_LINE_13:
+        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 13)
+        {
+          pstParam->COMControlMsg.backwards_reading_postion();
+        }
+        break;
+      case COM_CONTROL_WAIT_TILL_LINE_14:
+        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 14)
+        {
+          pstParam->COMControlMsg.backwards_reading_postion();
+        }
+        break;
+      case COM_CONTROL_WAIT_TILL_LINE_15:
+        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 15)
+        {
+          pstParam->COMControlMsg.backwards_reading_postion();
+        }
+        break;
+      case COM_CONTROL_WAIT_TILL_LINE_16:
+        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 16)
+        {
+          pstParam->COMControlMsg.backwards_reading_postion();
+        }
+        break;
+      case COM_CONTROL_WAIT_TILL_LINE_17:
+        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 17)
+        {
+          pstParam->COMControlMsg.backwards_reading_postion();
+        }
+        break;
+      case COM_CONTROL_WAIT_TILL_LINE_18:
+        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 18)
+        {
+          pstParam->COMControlMsg.backwards_reading_postion();
+        }
+        break;
+      case COM_CONTROL_WAIT_TILL_LINE_19:
+        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 19)
+        {
+          pstParam->COMControlMsg.backwards_reading_postion();
+        }
+        break;
+      case COM_CONTROL_WAIT_TILL_LINE_20:
+        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 20)
+        {
+          pstParam->COMControlMsg.backwards_reading_postion();
+        }
+        break;
+      case COM_CONTROL_WAIT_TILL_LINE_21:
+        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 21)
+        {
+          pstParam->COMControlMsg.backwards_reading_postion();
+        }
+        break;
+      case COM_CONTROL_WAIT_TILL_LINE_22:
+        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 22)
+        {
+          pstParam->COMControlMsg.backwards_reading_postion();
+        }
+        break;
+      default:
+        break;
+      }
+    }
   
   }
 
@@ -258,3 +431,4 @@ static int switch_session_block__main_loop(Param *pstParam, int *pnCurrentBlock,
 
   return 0;
 }
+

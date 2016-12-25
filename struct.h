@@ -1,6 +1,8 @@
 #pragma once
 //此文件记录了所有的结构体
 
+#include "MessageContainer.h"
+
 //舞台控制
 enum StageList{
   STAGE_MAIN_MENU, 
@@ -70,6 +72,9 @@ typedef struct BlockElement
 
   BlockElement *pCenter;
   BlockElement *pNext;
+
+  //COM_AI专用,用于临时储存旋转后的坐标。
+  ElementCoord stCoordAItmp;
 }BlockElement;
 
 //重要参数
@@ -102,4 +107,6 @@ typedef struct Param
   //存储当前方块中所有元素的链表（用于游戏中的上下左右操作）(电脑)
   BlockElement *pstFirstBlockElementCOM;
 
+  //电脑AI策略指令存储器。
+  MessageContainer COMControlMsg;
 }Param;

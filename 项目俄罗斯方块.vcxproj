@@ -79,6 +79,9 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="COM_control_AI.h" />
+    <ClInclude Include="COM_control_AI_1.h" />
+    <ClInclude Include="COM_control_list.h" />
     <ClInclude Include="customize_blocks.h" />
     <ClInclude Include="data_processor.h" />
     <ClInclude Include="engine.h" />
@@ -89,6 +92,7 @@
     <ClInclude Include="main_loop.h" />
     <ClInclude Include="main_menu.h" />
     <ClInclude Include="marco.h" />
+    <ClInclude Include="MessageContainer.h" />
     <ClInclude Include="play_solo.h" />
     <ClInclude Include="play_vs_com.h" />
     <ClInclude Include="stdafx.h" />
@@ -96,6 +100,8 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="COM_control_AI.cpp" />
+    <ClCompile Include="COM_control_AI_1.cpp" />
     <ClCompile Include="data_processor.cpp" />
     <ClCompile Include="engine.cpp" />
     <ClCompile Include="file_operator.cpp" />
@@ -103,6 +109,7 @@
     <ClCompile Include="chain_list_processor.cpp" />
     <ClCompile Include="main_loop.cpp" />
     <ClCompile Include="main_menu.cpp" />
+    <ClCompile Include="MessageContainer.cpp" />
     <ClCompile Include="play_solo.cpp" />
     <ClCompile Include="play_vs_com.cpp" />
     <ClCompile Include="stdafx.cpp">
