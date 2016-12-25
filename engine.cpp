@@ -102,7 +102,8 @@ int summon_new_block__engine(Param *pstParam, int *pnControlFlag,
     {
       if (eFlag == PLAYER_CONTROL)
       {
-        *pnControlFlag = CONTROL_FLAG_MAIN_LOOP_GAME_OVER_PLAYER;
+        //AI debug
+        //*pnControlFlag = CONTROL_FLAG_MAIN_LOOP_GAME_OVER_PLAYER;
       }
       if (eFlag == COM_CONTROL)
       {

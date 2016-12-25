@@ -108,6 +108,14 @@ static int initialize_parameter(Param *pstParam)
   //³õÊ¼»¯BlockElementÁ´±í
   pstParam->pstFirstBlockElementCOM = NULL;
 
+  /*//AIdebug
+  pstParam->CurrentPointerToBlockList = 0;
+
+  for (int m = 0; m < 100; m++)
+  {
+    pstParam->BlockList[m] = 3;
+  }*/
+
   return 0;
 }
 

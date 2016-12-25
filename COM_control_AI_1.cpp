@@ -35,6 +35,12 @@ int decide_control_list__COM_control_AI_1(Param *pstParam)
   //重置现存的控制信息
   pstParam->COMControlMsg.reset_message_list();
 
+  if (pstParam->pstFirstBlockElementCOM->nValue == 11)
+  {
+    //debug
+    printf("");
+  }
+
   //获取旋转次数和中心点的最终位置（最优情况）
   get_the_best_rotate_and_coord__COM_control_AI(pstParam, 
     &nDestCoordX, &nDestCoordY, &nRotateTimes);
@@ -214,6 +220,8 @@ static int translate_first_line_to_cmd__COM_control_AI_1(int nLineNum)
     return COM_CONTROL_WAIT_TILL_LINE_22;
     break;
   default:
+    //return COM_CONTROL_DEFAULT;
+    return COM_CONTROL_WAIT_TILL_LINE_2;
     break;
   }
 

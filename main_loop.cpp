@@ -59,6 +59,8 @@ int tetris_loop__main_loop(Param *pstParam)
     //随机出下一个方块（其实就是第一个方块，因为马上就session更新）
     nNextBlockCOM = get_a_random_block(pstParam);
     
+    nNextBlockCOM = 1;
+    
     //session更新
     switch_session_block__main_loop(pstParam, &nCurrentBlockCOM,
       &nNextBlockCOM, COM_CONTROL);
@@ -99,7 +101,7 @@ int tetris_loop__main_loop(Param *pstParam)
       //(尝试)消行
       clean_line__engine(pstParam, COM_CONTROL);
 
-      //召唤新的方块（玩家）
+      //召唤新的方块（电脑）
       summon_new_block__engine(pstParam, &nControlFlag, COM_CONTROL);
 
       bIsSessionEndedCOM = false;
@@ -183,7 +185,7 @@ int tetris_loop__main_loop(Param *pstParam)
 
     //如果是人机对战模式，读取MessageContainer的指令序列（AI指令）
     if (pstParam->eStageFlag == STAGE_PLAY_VS_COM &&
-      GetTickCount() - dwTimeCounterCOMAI > 400)
+      GetTickCount() - dwTimeCounterCOMAI > 40)
     {
       dwTimeCounterCOMAI = GetTickCount();
       nCOMAICmd = pstParam->COMControlMsg.read_message();
@@ -197,6 +199,11 @@ int tetris_loop__main_loop(Param *pstParam)
           &bIsSessionEndedCOM, COM_CONTROL);
         break;
       case COM_CONTROL_ROTATE:
+        //debug
+        if (pstParam->pstFirstBlockElementCOM->nValue == 11)
+        {
+          printf("");
+        }
         rotate_block__engine(pstParam, COM_CONTROL);
         break;
       case COM_CONTROL_MOVE_LEFT:
@@ -206,138 +213,184 @@ int tetris_loop__main_loop(Param *pstParam)
         move_right_block__engine(pstParam, COM_CONTROL);
         break;
       case COM_CONTROL_WAIT_TILL_LINE_0:
+        move_down_block__engine(pstParam, &nControlFlag,
+          &bIsSessionEndedCOM, COM_CONTROL);
         if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 0)
         {
           pstParam->COMControlMsg.backwards_reading_postion();
         }
         break;
       case COM_CONTROL_WAIT_TILL_LINE_1:
+        move_down_block__engine(pstParam, &nControlFlag,
+          &bIsSessionEndedCOM, COM_CONTROL);
         if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 1)
         {
           pstParam->COMControlMsg.backwards_reading_postion();
         }
         break;
       case COM_CONTROL_WAIT_TILL_LINE_2:
+        move_down_block__engine(pstParam, &nControlFlag,
+          &bIsSessionEndedCOM, COM_CONTROL);
         if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 2)
         {
           pstParam->COMControlMsg.backwards_reading_postion();
         }
         break;
       case COM_CONTROL_WAIT_TILL_LINE_3:
+        move_down_block__engine(pstParam, &nControlFlag,
+          &bIsSessionEndedCOM, COM_CONTROL);
         if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 3)
         {
           pstParam->COMControlMsg.backwards_reading_postion();
         }
         break;
       case COM_CONTROL_WAIT_TILL_LINE_4:
+        move_down_block__engine(pstParam, &nControlFlag,
+          &bIsSessionEndedCOM, COM_CONTROL);
         if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 4)
         {
           pstParam->COMControlMsg.backwards_reading_postion();
         }
         break;
       case COM_CONTROL_WAIT_TILL_LINE_5:
+        move_down_block__engine(pstParam, &nControlFlag,
+          &bIsSessionEndedCOM, COM_CONTROL);
         if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 5)
         {
           pstParam->COMControlMsg.backwards_reading_postion();
         }
         break;
       case COM_CONTROL_WAIT_TILL_LINE_6:
+        move_down_block__engine(pstParam, &nControlFlag,
+          &bIsSessionEndedCOM, COM_CONTROL);
         if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 6)
         {
           pstParam->COMControlMsg.backwards_reading_postion();
         }
         break;
       case COM_CONTROL_WAIT_TILL_LINE_7:
+        move_down_block__engine(pstParam, &nControlFlag,
+          &bIsSessionEndedCOM, COM_CONTROL);
         if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 7)
         {
           pstParam->COMControlMsg.backwards_reading_postion();
         }
         break;
       case COM_CONTROL_WAIT_TILL_LINE_8:
+        move_down_block__engine(pstParam, &nControlFlag,
+          &bIsSessionEndedCOM, COM_CONTROL);
         if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 8)
         {
           pstParam->COMControlMsg.backwards_reading_postion();
         }
         break;
       case COM_CONTROL_WAIT_TILL_LINE_9:
+        move_down_block__engine(pstParam, &nControlFlag,
+          &bIsSessionEndedCOM, COM_CONTROL);
         if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 9)
         {
           pstParam->COMControlMsg.backwards_reading_postion();
         }
         break;
       case COM_CONTROL_WAIT_TILL_LINE_10:
+        move_down_block__engine(pstParam, &nControlFlag,
+          &bIsSessionEndedCOM, COM_CONTROL);
         if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 10)
         {
           pstParam->COMControlMsg.backwards_reading_postion();
         }
         break;
       case COM_CONTROL_WAIT_TILL_LINE_11:
+        move_down_block__engine(pstParam, &nControlFlag,
+          &bIsSessionEndedCOM, COM_CONTROL);
         if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 11)
         {
           pstParam->COMControlMsg.backwards_reading_postion();
         }
         break;
       case COM_CONTROL_WAIT_TILL_LINE_12:
+        move_down_block__engine(pstParam, &nControlFlag,
+          &bIsSessionEndedCOM, COM_CONTROL);
         if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 12)
         {
           pstParam->COMControlMsg.backwards_reading_postion();
         }
         break;
       case COM_CONTROL_WAIT_TILL_LINE_13:
+        move_down_block__engine(pstParam, &nControlFlag,
+          &bIsSessionEndedCOM, COM_CONTROL);
         if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 13)
         {
           pstParam->COMControlMsg.backwards_reading_postion();
         }
         break;
       case COM_CONTROL_WAIT_TILL_LINE_14:
+        move_down_block__engine(pstParam, &nControlFlag,
+          &bIsSessionEndedCOM, COM_CONTROL);
         if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 14)
         {
           pstParam->COMControlMsg.backwards_reading_postion();
         }
         break;
       case COM_CONTROL_WAIT_TILL_LINE_15:
+        move_down_block__engine(pstParam, &nControlFlag,
+          &bIsSessionEndedCOM, COM_CONTROL);
         if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 15)
         {
           pstParam->COMControlMsg.backwards_reading_postion();
         }
         break;
       case COM_CONTROL_WAIT_TILL_LINE_16:
+        move_down_block__engine(pstParam, &nControlFlag,
+          &bIsSessionEndedCOM, COM_CONTROL);
         if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 16)
         {
           pstParam->COMControlMsg.backwards_reading_postion();
         }
         break;
       case COM_CONTROL_WAIT_TILL_LINE_17:
+        move_down_block__engine(pstParam, &nControlFlag,
+          &bIsSessionEndedCOM, COM_CONTROL);
         if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 17)
         {
           pstParam->COMControlMsg.backwards_reading_postion();
         }
         break;
       case COM_CONTROL_WAIT_TILL_LINE_18:
+        move_down_block__engine(pstParam, &nControlFlag,
+          &bIsSessionEndedCOM, COM_CONTROL);
         if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 18)
         {
           pstParam->COMControlMsg.backwards_reading_postion();
         }
         break;
       case COM_CONTROL_WAIT_TILL_LINE_19:
+        move_down_block__engine(pstParam, &nControlFlag,
+          &bIsSessionEndedCOM, COM_CONTROL);
         if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 19)
         {
           pstParam->COMControlMsg.backwards_reading_postion();
         }
         break;
       case COM_CONTROL_WAIT_TILL_LINE_20:
+        move_down_block__engine(pstParam, &nControlFlag,
+          &bIsSessionEndedCOM, COM_CONTROL);
         if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 20)
         {
           pstParam->COMControlMsg.backwards_reading_postion();
         }
         break;
       case COM_CONTROL_WAIT_TILL_LINE_21:
+        move_down_block__engine(pstParam, &nControlFlag,
+          &bIsSessionEndedCOM, COM_CONTROL);
         if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 21)
         {
           pstParam->COMControlMsg.backwards_reading_postion();
         }
         break;
       case COM_CONTROL_WAIT_TILL_LINE_22:
+        move_down_block__engine(pstParam, &nControlFlag,
+          &bIsSessionEndedCOM, COM_CONTROL);
         if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 22)
         {
           pstParam->COMControlMsg.backwards_reading_postion();
@@ -409,7 +462,17 @@ static int switch_session_block__main_loop(Param *pstParam, int *pnCurrentBlock,
 
   //随机下一个方块
   *pnNextBlock = get_a_random_block(pstParam);
-
+  /*//AIdebug
+  if (eFlag == COM_CONTROL)
+  {
+    *pnNextBlock = pstParam->BlockList[pstParam->CurrentPointerToBlockList];
+    pstParam->CurrentPointerToBlockList += 1;
+    if (pstParam->CurrentPointerToBlockList >=80)
+    {
+      pstParam->CurrentPointerToBlockList = 0;
+    }
+  }*/
+  
   //获得下一个方块的信息链表地址
   pstTmp = pstParam->pstFastArray[*pnNextBlock];
 

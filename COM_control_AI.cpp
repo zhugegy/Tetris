@@ -5,26 +5,29 @@
 #include "COM_control_list.h"
 
 static int initialize_tetris_space_score__COM_control_AI(
-  unsigned char TetrisSpaceScore[][TETRIS_PLAY_SPACE_X]);
+  int TetrisSpaceScore[][TETRIS_PLAY_SPACE_X]);
 static int simulate_rotation__COM_control_AI(Param *pstParam, int nRotateTime);
 static int update_tetris_space_score__COM_control_AI(Param *pstParam,
   unsigned char TetrisSpaceTemplate[][TETRIS_PLAY_SPACE_X],
-  unsigned char TetrisSpaceScore[][TETRIS_PLAY_SPACE_X]);
+  int TetrisSpaceScore[][TETRIS_PLAY_SPACE_X]);
 static int calculate_score__COM_control_AI(Param *pstParam, int nCoordX,
-  int nCoordY, unsigned char TetrisSpaceTemplate[][TETRIS_PLAY_SPACE_X]);
-static int find_the_min_height__COM_control_AI(
-  unsigned char TetrisSpaceScore[][TETRIS_PLAY_SPACE_X], int *pnRotateTime,
+  int nCoordY, unsigned char TetrisSpaceTemplate[][TETRIS_PLAY_SPACE_X],
+  int nPreviousHeight);
+static int find_the_min_score__COM_control_AI(
+  int TetrisSpaceScore[][TETRIS_PLAY_SPACE_X], int *pnRotateTime,
   int *pnCoordX, int *pnCoordY, int *pnMinHeight, int nCurrentRotateTime);
+static int calculate_height__COM_control_AI(
+  unsigned char TetrisSpace[][TETRIS_PLAY_SPACE_X]);
 
 int get_the_best_rotate_and_coord__COM_control_AI(Param *pstParam,
   int *pnCoordiX, int *pnCoordiY, int *pnRotationTime)
 {
   unsigned char TetrisSpaceTemplate[TETRIS_PLAY_SPACE_Y][TETRIS_PLAY_SPACE_X];
 
-  unsigned char TetrisSpaceScore_0[TETRIS_PLAY_SPACE_Y][TETRIS_PLAY_SPACE_X];
-  unsigned char TetrisSpaceScore_1[TETRIS_PLAY_SPACE_Y][TETRIS_PLAY_SPACE_X];
-  unsigned char TetrisSpaceScore_2[TETRIS_PLAY_SPACE_Y][TETRIS_PLAY_SPACE_X];
-  unsigned char TetrisSpaceScore_3[TETRIS_PLAY_SPACE_Y][TETRIS_PLAY_SPACE_X];
+  int TetrisSpaceScore_0[TETRIS_PLAY_SPACE_Y][TETRIS_PLAY_SPACE_X];
+  int TetrisSpaceScore_1[TETRIS_PLAY_SPACE_Y][TETRIS_PLAY_SPACE_X];
+  int TetrisSpaceScore_2[TETRIS_PLAY_SPACE_Y][TETRIS_PLAY_SPACE_X];
+  int TetrisSpaceScore_3[TETRIS_PLAY_SPACE_Y][TETRIS_PLAY_SPACE_X];
 
   int nRotateTime = -1;
   int nCoordX = -1;
@@ -60,19 +63,19 @@ int get_the_best_rotate_and_coord__COM_control_AI(Param *pstParam,
 
   //找到最小高度对应的旋转次数和坐标
   //不旋转，对应得分器0.
-  find_the_min_height__COM_control_AI(TetrisSpaceScore_0, &nRotateTime, 
+  find_the_min_score__COM_control_AI(TetrisSpaceScore_0, &nRotateTime, 
     &nCoordX, &nCoordY, &nMinHeight, 0);
 
   //旋转1次，对应得分器1.
-  find_the_min_height__COM_control_AI(TetrisSpaceScore_1, &nRotateTime,
+  find_the_min_score__COM_control_AI(TetrisSpaceScore_1, &nRotateTime,
     &nCoordX, &nCoordY, &nMinHeight, 1);
 
   //旋转2次，对应得分器2.
-  find_the_min_height__COM_control_AI(TetrisSpaceScore_2, &nRotateTime,
+  find_the_min_score__COM_control_AI(TetrisSpaceScore_2, &nRotateTime,
     &nCoordX, &nCoordY, &nMinHeight, 2);
 
   //旋转3次，对应得分器3.
-  find_the_min_height__COM_control_AI(TetrisSpaceScore_3, &nRotateTime,
+  find_the_min_score__COM_control_AI(TetrisSpaceScore_3, &nRotateTime,
     &nCoordX, &nCoordY, &nMinHeight, 3);
   
   *pnCoordiX = nCoordX;
@@ -82,8 +85,8 @@ int get_the_best_rotate_and_coord__COM_control_AI(Param *pstParam,
   return nMinHeight;
 }
 
-static int find_the_min_height__COM_control_AI(
-  unsigned char TetrisSpaceScore[][TETRIS_PLAY_SPACE_X], int *pnRotateTime, 
+static int find_the_min_score__COM_control_AI(
+  int TetrisSpaceScore[][TETRIS_PLAY_SPACE_X], int *pnRotateTime, 
   int *pnCoordX, int *pnCoordY, int *pnMinHeight, int nCurrentRotateTime)
 {
   int i = 0;
@@ -109,7 +112,7 @@ static int find_the_min_height__COM_control_AI(
 
 //初始化得分器。
 static int initialize_tetris_space_score__COM_control_AI(
-  unsigned char TetrisSpaceScore[][TETRIS_PLAY_SPACE_X])
+  int TetrisSpaceScore[][TETRIS_PLAY_SPACE_X])
 {
   int i = 0;
   int j = 0;
@@ -155,17 +158,22 @@ static int simulate_rotation__COM_control_AI(Param *pstParam, int nRotateTime)
 
 static int update_tetris_space_score__COM_control_AI(Param *pstParam, 
   unsigned char TetrisSpaceTemplate[][TETRIS_PLAY_SPACE_X],
-  unsigned char TetrisSpaceScore[][TETRIS_PLAY_SPACE_X])
+  int TetrisSpaceScore[][TETRIS_PLAY_SPACE_X])
 {
   int i = 0;
   int j = 0;
+
+  int nPreviousHeight = 0;
+
+  nPreviousHeight = calculate_height__COM_control_AI(TetrisSpaceTemplate);
 
   for (i = 0; i < TETRIS_PLAY_SPACE_Y; i++)
   {
     for (j = 0; j < TETRIS_PLAY_SPACE_X; j++)
     {
       TetrisSpaceScore[i][j] = 
-        calculate_score__COM_control_AI(pstParam, j, i, TetrisSpaceTemplate);
+        calculate_score__COM_control_AI(pstParam, j, i, TetrisSpaceTemplate,
+          nPreviousHeight);
     }
   }
 
@@ -173,12 +181,17 @@ static int update_tetris_space_score__COM_control_AI(Param *pstParam,
 }
 
 static int calculate_score__COM_control_AI(Param *pstParam, int nCoordX, 
-  int nCoordY, unsigned char TetrisSpaceTemplate[][TETRIS_PLAY_SPACE_X])
+  int nCoordY, unsigned char TetrisSpaceTemplate[][TETRIS_PLAY_SPACE_X],
+  int nPreHeight)
 {
   BlockElement *pstTmp = NULL;
 
   int i = 0;
   int j = 0;
+
+  int nCurrentHeight = 0;
+  int nHeightDistance = 0;
+  int nCenterPointHeight = 0;
 
   int nShiftDistanceX = 0;
   int nShiftDistanceY = 0;
@@ -235,6 +248,7 @@ static int calculate_score__COM_control_AI(Param *pstParam, int nCoordX,
   /*//如果不违规，返回中心点的高度
   return TETRIS_PLAY_SPACE_Y - nCoordY - 1;*/
   
+
   //如果不违规，计算空格上方被堵惩罚
   memcpy(TetrisSpaceWorkPlace, TetrisSpaceTemplate,
     sizeof(TetrisSpaceWorkPlace) * sizeof(char));    //应该是_countof,这里有错，不过先不改，没影响
@@ -247,7 +261,39 @@ static int calculate_score__COM_control_AI(Param *pstParam, int nCoordX,
     TetrisSpaceWorkPlace[nCurrentCoordYtmp][nCurrentCoordXtmp] = SOLID_BLOCK_VALUE;
   }
 
-  //如果可以消除行，那么直接返回0，消行优先
+  for (pstTmp = pstParam->pstFirstBlockElementCOM; pstTmp; pstTmp = pstTmp->pNext)
+  {
+    nCurrentCoordXtmp = pstTmp->stCoordAItmp.nX - nShiftDistanceX;
+    nCurrentCoordYtmp = pstTmp->stCoordAItmp.nY - nShiftDistanceY;
+
+    for (i = nCurrentCoordYtmp + 1; i < nCurrentCoordYtmp + 3; i++)
+    {
+      if (i < TETRIS_PLAY_SPACE_Y - 1 &&
+        TetrisSpaceWorkPlace[i][nCurrentCoordXtmp] == SPACE_VALUE_TYPE_A)
+      {
+        nPulishment += 30;
+      }
+    }
+    
+   /* if (nCurrentCoordYtmp + 2 < TETRIS_PLAY_SPACE_Y &&
+      TetrisSpaceWorkPlace[nCurrentCoordYtmp + 2][nCurrentCoordXtmp] == SPACE_VALUE_TYPE_A)
+    {
+      return COM_AI_TETRIS_SPACE_SCORE_SAPCE_BELOW;
+    }
+    if (nCurrentCoordYtmp + 1 < TETRIS_PLAY_SPACE_Y &&
+      TetrisSpaceWorkPlace[nCurrentCoordYtmp + 1][nCurrentCoordXtmp] == SPACE_VALUE_TYPE_A)
+    {
+      nPulishment += 30;
+      //return COM_AI_TETRIS_SPACE_SCORE_SAPCE_BELOW;
+    }*/
+  }
+
+  //nCurrentHeight = calculate_height__COM_control_AI(TetrisSpaceWorkPlace);
+  nCenterPointHeight = TETRIS_PLAY_SPACE_Y - nCoordY - 1;
+  nCurrentHeight = nCenterPointHeight;
+  nHeightDistance = nCurrentHeight - nPreHeight;
+
+  //如果可以消除行，那么每消一行pulishment -100，消行优先
   for (i = TETRIS_PLAY_SPACE_Y - 1 - 1; i >= 0; i--)
   {
     for (j = 1; j <= TETRIS_PLAY_SPACE_X - 1 - 1; j++)
@@ -258,16 +304,20 @@ static int calculate_score__COM_control_AI(Param *pstParam, int nCoordX,
       }
       if (j == TETRIS_PLAY_SPACE_X - 1 - 1)
       {
-        return 0;
+        //nPulishment -= 2000;
+        return -2000;
       }
     }
   }
 
+  /*for (i = nCoordY - 2; i < nCoordY + 3; i++)  for (i = nCoordY - 2; i < nCoordY + 3; i++)
+  {
+    for (j = nCoordX - 1; j < nCoordX + 2; j++)
+    {
   for (i = 0; i < TETRIS_PLAY_SPACE_Y; i++)
   {
-    for (j = 1; j < TETRIS_PLAY_SPACE_X - 1; j++)
-    {
-      if (
+    for (j = 0; j < TETRIS_PLAY_SPACE_X; j++)
+    {      if (
         i != 0 &&
         TetrisSpaceWorkPlace[i - 1][j] == SOLID_BLOCK_VALUE &&
         TetrisSpaceWorkPlace[i][j - 1] >= WALL_VALUE &&
@@ -296,8 +346,23 @@ static int calculate_score__COM_control_AI(Param *pstParam, int nCoordX,
       {
         nPulishment += 6;
       }
+      else       if (
+        i - 1 >= 0 &&
+        i + 1 <= TETRIS_PLAY_SPACE_Y - 1 &&
+        j >= 1 &&
+        j <= TETRIS_PLAY_SPACE_X - 1 &&
+        TetrisSpaceWorkPlace[i - 1][j] == SOLID_BLOCK_VALUE &&
+        TetrisSpaceWorkPlace[i][j] == SPACE_VALUE_TYPE_A &&
+        TetrisSpaceWorkPlace[i + 1][j] == SPACE_VALUE_TYPE_A
+        )
+      {
+        nPulishment += 8;
+      }
       else if (
-        i != 0 &&
+        i - 1 >= 0 &&
+        i + 1 <= TETRIS_PLAY_SPACE_Y - 1 &&
+        j >= 1 &&
+        j <= TETRIS_PLAY_SPACE_X - 1 &&
         TetrisSpaceWorkPlace[i - 1][j] == SOLID_BLOCK_VALUE &&
         TetrisSpaceWorkPlace[i][j] == SPACE_VALUE_TYPE_A
         )
@@ -305,16 +370,42 @@ static int calculate_score__COM_control_AI(Param *pstParam, int nCoordX,
         nPulishment += 4;
       }
     }
-  }
+  }*/
 
   
 
-  if (TETRIS_PLAY_SPACE_Y - nCoordY - 1 + nPulishment > 255)
+  /*if (nHeightDistance + nCenterPointHeight + nPulishment > 255)
   {
     return 255;
   }
 
+  if (nHeightDistance + nCenterPointHeight + nPulishment < 0)
+  {
+    return 0;
+  }*/
+
   //返回最终得分：中心点的高度+惩罚
-  return TETRIS_PLAY_SPACE_Y - nCoordY - 1 + nPulishment;
+  //返回最终得分：高度差+惩罚
+
+  return nHeightDistance * 3 + nCenterPointHeight * 3 + nPulishment;
 }
 
+static int calculate_height__COM_control_AI(
+  unsigned char TetrisSpace[][TETRIS_PLAY_SPACE_X])
+{
+  int i = 0;
+  int j = 0;
+
+  for (i = 0; i < TETRIS_PLAY_SPACE_Y; i++)
+  {
+    for (j = 0; j < TETRIS_PLAY_SPACE_X; j++)
+    {
+      if (TetrisSpace[i][j] == SOLID_BLOCK_VALUE)
+      {
+        return TETRIS_PLAY_SPACE_Y - i - 1;
+      }
+    }
+  }
+
+  return 0;
+}

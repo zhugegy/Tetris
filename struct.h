@@ -109,4 +109,8 @@ typedef struct Param
 
   //µçÄÔAI²ßÂÔÖ¸Áî´æ´¢Æ÷¡£
   MessageContainer COMControlMsg;
+
+  /*//AIdebug
+  int BlockList[100];
+  int CurrentPointerToBlockList;*/
 }Param;
