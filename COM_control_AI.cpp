@@ -18,6 +18,9 @@ static int find_the_min_score__COM_control_AI(
   int *pnCoordX, int *pnCoordY, int *pnMinHeight, int nCurrentRotateTime);
 static int calculate_height__COM_control_AI(
   unsigned char TetrisSpace[][TETRIS_PLAY_SPACE_X]);
+/*
+static int COM_control_wait_till__COM_control_AI(Param *pstParam, int nWaitTill,
+  int *pnControlFlag, bool *pbIsSessionEnded, PlayerVSCOMControlFlag eFlag);*/
 
 int get_the_best_rotate_and_coord__COM_control_AI(Param *pstParam,
   int *pnCoordiX, int *pnCoordiY, int *pnRotationTime)
@@ -84,6 +87,155 @@ int get_the_best_rotate_and_coord__COM_control_AI(Param *pstParam,
 
   return nMinHeight;
 }
+
+int translate_COM_cmd_to_action__COM_control_AI(Param *pstParam, int nCmd,
+  int *pnControlFlag, bool *pbIsSessionEndedCOM)
+{
+  switch (nCmd)
+  {
+  case COM_CONTROL_DEFAULT:
+    //什么都不做(其实还是往下移动一行)
+    move_down_block__engine(pstParam, pnControlFlag, pbIsSessionEndedCOM,
+      COM_CONTROL);
+    break;
+  case COM_CONTROL_ROTATE:
+    //debug断点
+    if (pstParam->pstFirstBlockElementCOM->nValue == 11)
+    {
+      printf("");
+    }
+    while (rotate_block__engine(pstParam, COM_CONTROL) != 1)
+    {
+      move_down_block__engine(pstParam, pnControlFlag, pbIsSessionEndedCOM,
+        COM_CONTROL);
+    }
+    break;
+  case COM_CONTROL_MOVE_LEFT:
+    move_left_block__engine(pstParam, COM_CONTROL);
+    break;
+  case COM_CONTROL_MOVE_RIGHT:
+    move_right_block__engine(pstParam, COM_CONTROL);
+    break;
+  case COM_CONTROL_MOVE_STRAIGT_DOWN:
+    while (*pbIsSessionEndedCOM == false)
+    {
+      move_down_block__engine(pstParam, pnControlFlag, pbIsSessionEndedCOM, 
+        COM_CONTROL);
+    }
+    break;
+  /*case COM_CONTROL_WAIT_TILL_LINE_0:
+    COM_control_wait_till__COM_control_AI(pstParam, 0, pnControlFlag, 
+      pbIsSessionEndedCOM, COM_CONTROL);
+    break;
+  case COM_CONTROL_WAIT_TILL_LINE_1:
+    COM_control_wait_till__COM_control_AI(pstParam, 1, pnControlFlag, 
+      pbIsSessionEndedCOM, COM_CONTROL);
+    break;
+  case COM_CONTROL_WAIT_TILL_LINE_2:
+    COM_control_wait_till__COM_control_AI(pstParam, 2, pnControlFlag, 
+      pbIsSessionEndedCOM, COM_CONTROL);
+    break;
+  case COM_CONTROL_WAIT_TILL_LINE_3:
+    COM_control_wait_till__COM_control_AI(pstParam, 3, pnControlFlag, 
+      pbIsSessionEndedCOM, COM_CONTROL);
+    break;
+  case COM_CONTROL_WAIT_TILL_LINE_4:
+    COM_control_wait_till__COM_control_AI(pstParam, 4, pnControlFlag, 
+      pbIsSessionEndedCOM, COM_CONTROL);
+    break;
+  case COM_CONTROL_WAIT_TILL_LINE_5:
+    COM_control_wait_till__COM_control_AI(pstParam, 5, pnControlFlag, 
+      pbIsSessionEndedCOM, COM_CONTROL);
+    break;
+  case COM_CONTROL_WAIT_TILL_LINE_6:
+    COM_control_wait_till__COM_control_AI(pstParam, 6, pnControlFlag, 
+      pbIsSessionEndedCOM, COM_CONTROL);
+    break;
+  case COM_CONTROL_WAIT_TILL_LINE_7:
+    COM_control_wait_till__COM_control_AI(pstParam, 7, pnControlFlag, 
+      pbIsSessionEndedCOM, COM_CONTROL);
+    break;
+  case COM_CONTROL_WAIT_TILL_LINE_8:
+    COM_control_wait_till__COM_control_AI(pstParam, 8, pnControlFlag, 
+      pbIsSessionEndedCOM, COM_CONTROL);
+    break;
+  case COM_CONTROL_WAIT_TILL_LINE_9:
+    COM_control_wait_till__COM_control_AI(pstParam, 9, pnControlFlag, 
+      pbIsSessionEndedCOM, COM_CONTROL);
+    break;
+  case COM_CONTROL_WAIT_TILL_LINE_10:
+    COM_control_wait_till__COM_control_AI(pstParam, 10, pnControlFlag, 
+      pbIsSessionEndedCOM, COM_CONTROL);
+    break;
+  case COM_CONTROL_WAIT_TILL_LINE_11:
+    COM_control_wait_till__COM_control_AI(pstParam, 11, pnControlFlag, 
+      pbIsSessionEndedCOM, COM_CONTROL);
+    break;
+  case COM_CONTROL_WAIT_TILL_LINE_12:
+    COM_control_wait_till__COM_control_AI(pstParam, 12, pnControlFlag, 
+      pbIsSessionEndedCOM, COM_CONTROL);
+    break;
+  case COM_CONTROL_WAIT_TILL_LINE_13:
+    COM_control_wait_till__COM_control_AI(pstParam, 13, pnControlFlag, 
+      pbIsSessionEndedCOM, COM_CONTROL);
+    break;
+  case COM_CONTROL_WAIT_TILL_LINE_14:
+    COM_control_wait_till__COM_control_AI(pstParam, 14, pnControlFlag, 
+      pbIsSessionEndedCOM, COM_CONTROL);
+    break;
+  case COM_CONTROL_WAIT_TILL_LINE_15:
+    COM_control_wait_till__COM_control_AI(pstParam, 15, pnControlFlag, 
+      pbIsSessionEndedCOM, COM_CONTROL);
+    break;
+  case COM_CONTROL_WAIT_TILL_LINE_16:
+    COM_control_wait_till__COM_control_AI(pstParam, 16, pnControlFlag, 
+      pbIsSessionEndedCOM, COM_CONTROL);
+    break;
+  case COM_CONTROL_WAIT_TILL_LINE_17:
+    COM_control_wait_till__COM_control_AI(pstParam, 17, pnControlFlag, 
+      pbIsSessionEndedCOM, COM_CONTROL);
+    break;
+  case COM_CONTROL_WAIT_TILL_LINE_18:
+    COM_control_wait_till__COM_control_AI(pstParam, 18, pnControlFlag,
+      pbIsSessionEndedCOM, COM_CONTROL);
+    break;
+  case COM_CONTROL_WAIT_TILL_LINE_19:
+    COM_control_wait_till__COM_control_AI(pstParam, 19, pnControlFlag, 
+      pbIsSessionEndedCOM, COM_CONTROL);
+    break;
+  case COM_CONTROL_WAIT_TILL_LINE_20:
+    COM_control_wait_till__COM_control_AI(pstParam, 20, pnControlFlag, 
+      pbIsSessionEndedCOM, COM_CONTROL);
+    break;
+  case COM_CONTROL_WAIT_TILL_LINE_21:
+    COM_control_wait_till__COM_control_AI(pstParam, 21, pnControlFlag, 
+      pbIsSessionEndedCOM, COM_CONTROL);
+    break;
+  case COM_CONTROL_WAIT_TILL_LINE_22:
+    COM_control_wait_till__COM_control_AI(pstParam, 22, pnControlFlag, 
+      pbIsSessionEndedCOM, COM_CONTROL);
+    break;*/
+  default:
+    break;
+  }
+
+  return 0;
+}
+
+/*
+static int COM_control_wait_till__COM_control_AI(Param *pstParam, int nWaitTill,
+  int *pnControlFlag, bool *pbIsSessionEnded, PlayerVSCOMControlFlag eFlag)
+{
+  move_down_block__engine(pstParam, pnControlFlag, pbIsSessionEnded,
+    COM_CONTROL);
+
+  if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < nWaitTill)
+  {
+    pstParam->COMControlMsg.backwards_reading_postion();
+  }
+
+  return 0;
+}*/
 
 static int find_the_min_score__COM_control_AI(
   int TetrisSpaceScore[][TETRIS_PLAY_SPACE_X], int *pnRotateTime, 

@@ -60,6 +60,12 @@ int MessageContainer::read_message()
   nMessage = MessageList[nReadingPostion];
   nReadingPostion++;
 
+  //简陋的防溢出。。先用着
+  if (nReadingPostion >= MESSAGE_CONTAINER_MAX_NUM)
+  {
+    nReadingPostion = MESSAGE_CONTAINER_MAX_NUM - 10;
+  }
+
   return nMessage;
 }
 

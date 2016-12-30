@@ -656,7 +656,7 @@ int rotate_block__engine(Param *pstParam, PlayerVSCOMControlFlag eFlag)
     }
   }
 
-  return 0;
+  return 1;
 }
 
 static int get_dest_coord__engine(BlockElement *pstObj, int *pnDestX, int *pnDestY)
@@ -718,8 +718,8 @@ int get_dest_coord_for_COM_control_AI__engine(BlockElement *pstObj,
   int nDistanceToAlignCoord = 0;
 
   //求移动到0,0坐标系需要的整体位移
-  nShiftDistanceX = 0 - pstObj->pCenter->stCoord.nX;
-  nShiftDistanceY = 0 - pstObj->pCenter->stCoord.nY;
+  nShiftDistanceX = 0 - pstObj->pCenter->stCoordAItmp.nX;
+  nShiftDistanceY = 0 - pstObj->pCenter->stCoordAItmp.nY;
 
   //求得此点在0,0坐标系里的坐标
   nRelativeCoordX = pstObj->stCoordAItmp.nX + nShiftDistanceX;
@@ -738,8 +738,8 @@ int get_dest_coord_for_COM_control_AI__engine(BlockElement *pstObj,
     nAlignCoordX, nAlignCoordY, &nRelativeCoordX, &nRelativeCoordY);
 
   //根据现在的0,0坐标，反推出目的地坐标
-  *pnDestX = pstObj->pCenter->stCoord.nX - nRelativeCoordX;
-  *pnDestY = pstObj->pCenter->stCoord.nY - nRelativeCoordY;
+  *pnDestX = pstObj->pCenter->stCoordAItmp.nX - nRelativeCoordX;
+  *pnDestY = pstObj->pCenter->stCoordAItmp.nY - nRelativeCoordY;
 
   return 0;
 }

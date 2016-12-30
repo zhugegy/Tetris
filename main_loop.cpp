@@ -6,12 +6,14 @@
 #include "chain_list_processor.h"
 #include "engine.h"
 #include "COM_control_list.h"
+#include "COM_control_AI.h"
 
 
 #include <conio.h>
 
 static int switch_session_block__main_loop(Param *pstParam, int *pnCurrentBlock,
 	int *pnNextBlock, PlayerVSCOMControlFlag eFlag);
+
 
 //玩家和电脑都在这同一个循环中
 int tetris_loop__main_loop(Param *pstParam)
@@ -41,7 +43,7 @@ int tetris_loop__main_loop(Param *pstParam)
   DWORD nNumRead;
 
   //随机出下一个方块（其实就是第一个方块，因为马上就session更新）
-  nNextBlockPlayer = get_a_random_block(pstParam);
+  nNextBlockPlayer = get_a_random_block(pstParam, -1);
 
   //session更新
   switch_session_block__main_loop(pstParam, &nCurrentBlockPlayer, 
@@ -57,7 +59,7 @@ int tetris_loop__main_loop(Param *pstParam)
   if (pstParam->eStageFlag == STAGE_PLAY_VS_COM)
   {
     //随机出下一个方块（其实就是第一个方块，因为马上就session更新）
-    nNextBlockCOM = get_a_random_block(pstParam);
+    nNextBlockCOM = get_a_random_block(pstParam, -1);
     
     nNextBlockCOM = 1;
     
@@ -124,6 +126,7 @@ int tetris_loop__main_loop(Param *pstParam)
         COM_CONTROL);
     }
 
+    //按键处理
     if (_kbhit())
     {
       ReadConsoleInput(hStdIn, irBuf, 128, &nNumRead);
@@ -176,6 +179,19 @@ int tetris_loop__main_loop(Param *pstParam)
                 &bIsSessionEndedCOM, COM_CONTROL);
             }
             break;
+          case VK_NUMPAD1:
+            //电脑难度-1
+            if (pstParam->nCOMLevel > 1)
+            {
+              pstParam->nCOMLevel--;
+            }
+            break;
+          case VK_NUMPAD2:
+            if (pstParam->nCOMLevel < MAX_COM_SPEED_LIST_NUM - 1)
+            {
+              pstParam->nCOMLevel++;
+            }
+            break;
           default:
             break;
           }
@@ -185,223 +201,19 @@ int tetris_loop__main_loop(Param *pstParam)
 
     //如果是人机对战模式，读取MessageContainer的指令序列（AI指令）
     if (pstParam->eStageFlag == STAGE_PLAY_VS_COM &&
-      GetTickCount() - dwTimeCounterCOMAI > 40)
+      GetTickCount() - dwTimeCounterCOMAI > 
+      pstParam->nCOMSpeedList[pstParam->nCOMLevel])
     {
       dwTimeCounterCOMAI = GetTickCount();
       nCOMAICmd = pstParam->COMControlMsg.read_message();
       //翻译并执行
-      //translate_COM_AI_cmd__COM_control_AI(pstParam, nCOMAICmd);
-      switch (nCOMAICmd)
-      {
-      case COM_CONTROL_DEFAULT:
-        //什么都不做
-        move_down_block__engine(pstParam, &nControlFlag,
-          &bIsSessionEndedCOM, COM_CONTROL);
-        break;
-      case COM_CONTROL_ROTATE:
-        //debug
-        if (pstParam->pstFirstBlockElementCOM->nValue == 11)
-        {
-          printf("");
-        }
-        rotate_block__engine(pstParam, COM_CONTROL);
-        break;
-      case COM_CONTROL_MOVE_LEFT:
-        move_left_block__engine(pstParam, COM_CONTROL);
-        break;
-      case COM_CONTROL_MOVE_RIGHT:
-        move_right_block__engine(pstParam, COM_CONTROL);
-        break;
-      case COM_CONTROL_WAIT_TILL_LINE_0:
-        move_down_block__engine(pstParam, &nControlFlag,
-          &bIsSessionEndedCOM, COM_CONTROL);
-        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 0)
-        {
-          pstParam->COMControlMsg.backwards_reading_postion();
-        }
-        break;
-      case COM_CONTROL_WAIT_TILL_LINE_1:
-        move_down_block__engine(pstParam, &nControlFlag,
-          &bIsSessionEndedCOM, COM_CONTROL);
-        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 1)
-        {
-          pstParam->COMControlMsg.backwards_reading_postion();
-        }
-        break;
-      case COM_CONTROL_WAIT_TILL_LINE_2:
-        move_down_block__engine(pstParam, &nControlFlag,
-          &bIsSessionEndedCOM, COM_CONTROL);
-        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 2)
-        {
-          pstParam->COMControlMsg.backwards_reading_postion();
-        }
-        break;
-      case COM_CONTROL_WAIT_TILL_LINE_3:
-        move_down_block__engine(pstParam, &nControlFlag,
-          &bIsSessionEndedCOM, COM_CONTROL);
-        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 3)
-        {
-          pstParam->COMControlMsg.backwards_reading_postion();
-        }
-        break;
-      case COM_CONTROL_WAIT_TILL_LINE_4:
-        move_down_block__engine(pstParam, &nControlFlag,
-          &bIsSessionEndedCOM, COM_CONTROL);
-        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 4)
-        {
-          pstParam->COMControlMsg.backwards_reading_postion();
-        }
-        break;
-      case COM_CONTROL_WAIT_TILL_LINE_5:
-        move_down_block__engine(pstParam, &nControlFlag,
-          &bIsSessionEndedCOM, COM_CONTROL);
-        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 5)
-        {
-          pstParam->COMControlMsg.backwards_reading_postion();
-        }
-        break;
-      case COM_CONTROL_WAIT_TILL_LINE_6:
-        move_down_block__engine(pstParam, &nControlFlag,
-          &bIsSessionEndedCOM, COM_CONTROL);
-        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 6)
-        {
-          pstParam->COMControlMsg.backwards_reading_postion();
-        }
-        break;
-      case COM_CONTROL_WAIT_TILL_LINE_7:
-        move_down_block__engine(pstParam, &nControlFlag,
-          &bIsSessionEndedCOM, COM_CONTROL);
-        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 7)
-        {
-          pstParam->COMControlMsg.backwards_reading_postion();
-        }
-        break;
-      case COM_CONTROL_WAIT_TILL_LINE_8:
-        move_down_block__engine(pstParam, &nControlFlag,
-          &bIsSessionEndedCOM, COM_CONTROL);
-        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 8)
-        {
-          pstParam->COMControlMsg.backwards_reading_postion();
-        }
-        break;
-      case COM_CONTROL_WAIT_TILL_LINE_9:
-        move_down_block__engine(pstParam, &nControlFlag,
-          &bIsSessionEndedCOM, COM_CONTROL);
-        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 9)
-        {
-          pstParam->COMControlMsg.backwards_reading_postion();
-        }
-        break;
-      case COM_CONTROL_WAIT_TILL_LINE_10:
-        move_down_block__engine(pstParam, &nControlFlag,
-          &bIsSessionEndedCOM, COM_CONTROL);
-        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 10)
-        {
-          pstParam->COMControlMsg.backwards_reading_postion();
-        }
-        break;
-      case COM_CONTROL_WAIT_TILL_LINE_11:
-        move_down_block__engine(pstParam, &nControlFlag,
-          &bIsSessionEndedCOM, COM_CONTROL);
-        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 11)
-        {
-          pstParam->COMControlMsg.backwards_reading_postion();
-        }
-        break;
-      case COM_CONTROL_WAIT_TILL_LINE_12:
-        move_down_block__engine(pstParam, &nControlFlag,
-          &bIsSessionEndedCOM, COM_CONTROL);
-        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 12)
-        {
-          pstParam->COMControlMsg.backwards_reading_postion();
-        }
-        break;
-      case COM_CONTROL_WAIT_TILL_LINE_13:
-        move_down_block__engine(pstParam, &nControlFlag,
-          &bIsSessionEndedCOM, COM_CONTROL);
-        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 13)
-        {
-          pstParam->COMControlMsg.backwards_reading_postion();
-        }
-        break;
-      case COM_CONTROL_WAIT_TILL_LINE_14:
-        move_down_block__engine(pstParam, &nControlFlag,
-          &bIsSessionEndedCOM, COM_CONTROL);
-        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 14)
-        {
-          pstParam->COMControlMsg.backwards_reading_postion();
-        }
-        break;
-      case COM_CONTROL_WAIT_TILL_LINE_15:
-        move_down_block__engine(pstParam, &nControlFlag,
-          &bIsSessionEndedCOM, COM_CONTROL);
-        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 15)
-        {
-          pstParam->COMControlMsg.backwards_reading_postion();
-        }
-        break;
-      case COM_CONTROL_WAIT_TILL_LINE_16:
-        move_down_block__engine(pstParam, &nControlFlag,
-          &bIsSessionEndedCOM, COM_CONTROL);
-        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 16)
-        {
-          pstParam->COMControlMsg.backwards_reading_postion();
-        }
-        break;
-      case COM_CONTROL_WAIT_TILL_LINE_17:
-        move_down_block__engine(pstParam, &nControlFlag,
-          &bIsSessionEndedCOM, COM_CONTROL);
-        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 17)
-        {
-          pstParam->COMControlMsg.backwards_reading_postion();
-        }
-        break;
-      case COM_CONTROL_WAIT_TILL_LINE_18:
-        move_down_block__engine(pstParam, &nControlFlag,
-          &bIsSessionEndedCOM, COM_CONTROL);
-        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 18)
-        {
-          pstParam->COMControlMsg.backwards_reading_postion();
-        }
-        break;
-      case COM_CONTROL_WAIT_TILL_LINE_19:
-        move_down_block__engine(pstParam, &nControlFlag,
-          &bIsSessionEndedCOM, COM_CONTROL);
-        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 19)
-        {
-          pstParam->COMControlMsg.backwards_reading_postion();
-        }
-        break;
-      case COM_CONTROL_WAIT_TILL_LINE_20:
-        move_down_block__engine(pstParam, &nControlFlag,
-          &bIsSessionEndedCOM, COM_CONTROL);
-        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 20)
-        {
-          pstParam->COMControlMsg.backwards_reading_postion();
-        }
-        break;
-      case COM_CONTROL_WAIT_TILL_LINE_21:
-        move_down_block__engine(pstParam, &nControlFlag,
-          &bIsSessionEndedCOM, COM_CONTROL);
-        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 21)
-        {
-          pstParam->COMControlMsg.backwards_reading_postion();
-        }
-        break;
-      case COM_CONTROL_WAIT_TILL_LINE_22:
-        move_down_block__engine(pstParam, &nControlFlag,
-          &bIsSessionEndedCOM, COM_CONTROL);
-        if (pstParam->pstFirstBlockElementCOM->pCenter->stCoord.nY < 22)
-        {
-          pstParam->COMControlMsg.backwards_reading_postion();
-        }
-        break;
-      default:
-        break;
-      }
+      translate_COM_cmd_to_action__COM_control_AI(pstParam, nCOMAICmd,
+        &nControlFlag, &bIsSessionEndedCOM);
     }
   
   }
+
+  getchar();
 
   return 0;
 }
@@ -461,7 +273,7 @@ static int switch_session_block__main_loop(Param *pstParam, int *pnCurrentBlock,
   after_process_block_element_chain__data_processor(pstParam, eFlag);
 
   //随机下一个方块
-  *pnNextBlock = get_a_random_block(pstParam);
+  *pnNextBlock = get_a_random_block(pstParam, *pnCurrentBlock);
   /*//AIdebug
   if (eFlag == COM_CONTROL)
   {
@@ -494,4 +306,6 @@ static int switch_session_block__main_loop(Param *pstParam, int *pnCurrentBlock,
 
   return 0;
 }
+
+
 

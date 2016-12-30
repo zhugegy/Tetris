@@ -110,6 +110,10 @@ typedef struct Param
   //电脑AI策略指令存储器。
   MessageContainer COMControlMsg;
 
+  //电脑AI速度（难度）
+  int nCOMSpeedList[MAX_COM_SPEED_LIST_NUM];
+  int nCOMLevel;
+
   /*//AIdebug
   int BlockList[100];
   int CurrentPointerToBlockList;*/

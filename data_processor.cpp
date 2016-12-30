@@ -367,7 +367,7 @@ int get_customized_block_center_point__data_processor(ElementCoord *pstCoord,
 }
 
 //随机出一个方块（序号）
-int get_a_random_block(Param *pstParam)
+int get_a_random_block(Param *pstParam, int nCurrentBlock)
 {
   int nSerial = 0;
   int nChance = 0;
@@ -377,7 +377,8 @@ int get_a_random_block(Param *pstParam)
     nSerial = (rand() % pstParam->nBlockNum) + 1;
     nChance = rand() % 5;    /*0 - 4*/
 
-    if (nChance < pstParam->pstFastArray[nSerial]->nFrequency)
+    if (nSerial != nCurrentBlock /*不能连续两个相同的方块*/ && 
+      nChance < pstParam->pstFastArray[nSerial]->nFrequency)
     {
       return nSerial;
     }

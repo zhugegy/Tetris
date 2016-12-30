@@ -73,12 +73,14 @@
 #define INTERFACE_WINDOW_COORD_X0_BASIC 0
 #define INTERFACE_WINDOW_COORD_Y0_BASIC 0
 #define INTERFACE_WINDOW_COORD_X1_BASIC 800
-#define INTERFACE_WINDOW_COORD_Y1_BASIC 270
+//270 maxever 470 修改此数值用于调试 别忘了同时修改 TETRIS_PLAY_SPACE_Y
+#define INTERFACE_WINDOW_COORD_Y1_BASIC 370 
 
 #define INTERFACE_WINDOW_COORD_X1_WIDE 1320
 
 #define TETRIS_PLAY_SPACE_X 14    //12 + 2（墙） 列
-#define TETRIS_PLAY_SPACE_Y 23    //23行
+//23行  maxever 43 修改此数值用于调试 别忘了同时修改 INTERFACE_WINDOW_COORD_Y1_BASIC
+#define TETRIS_PLAY_SPACE_Y 33    
 
 #define TETRIS_CUSTOMIZE_BLOCKS_SPACE_Y 6    //给高度为6的自定义方块空间
 #define TETRIS_CUSTOMIZE_BLOCKS_SPACE_X TETRIS_PLAY_SPACE_X    //自定义方块空间宽度
@@ -190,4 +192,22 @@ const unsigned short szCustomizeBlocksFrequencyColor[6] = {
   INTERFACE_BLOCK_COLOR_BLACK_YELLOW,/*[3]*//*黑底黄色*/
   INTERFACE_BLOCK_COLOR_BLACK_PURPLE,/*[4]*//*黑底紫色*/
   INTERFACE_BLOCK_COLOR_BLACK_RED,/*[5]*//*黑底红色*/
+};
+
+#define MAX_COM_SPEED_LIST_NUM 11
+
+//const变量是C++语法
+/*电脑操作速度（难度），10级*/
+const int nCOMSpeed[MAX_COM_SPEED_LIST_NUM] = {
+  500,  //0缺省
+  500,  //1
+  300,  //2
+  200,  //3
+  100,  //4
+  50,   //5
+  20,   //6
+  10,   //7
+  5,    //8
+  2,    //9
+  1     //10
 };

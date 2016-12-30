@@ -9,20 +9,20 @@
 //初级策略：高度最低原则。寻找可旋转点-》等待到达可旋转点-》旋转-》左右位移-》迅速落位。
 //此AI略显粗糙，仅作为测试，或者作为最低级电脑AI使用。
 
-static int find_the_first_line_for_rotation__COM_control_AI_1(Param *pstParam);
-static int translate_first_line_to_cmd__COM_control_AI_1(int nLineNum);
+//static int find_the_first_line_for_rotation__COM_control_AI_1(Param *pstParam);
+//static int translate_first_line_to_cmd__COM_control_AI_1(int nLineNum);
 
 
 int decide_control_list__COM_control_AI_1(Param *pstParam)
 {
   int i = 0;
-  int nCmd;
+  //int nCmd;
 
   int nDestCoordX = 0;
   int nDestCoordY = 0;
   int nRotateTimes = 0;
 
-  int nRotateLine = -1;
+  //int nRotateLine = -1;
 
   int nCurrentCenterCoordX = 0;
 /*
@@ -46,11 +46,13 @@ int decide_control_list__COM_control_AI_1(Param *pstParam)
     &nDestCoordX, &nDestCoordY, &nRotateTimes);
 
   //获取可以进行旋转动作的那一行
-  nRotateLine = find_the_first_line_for_rotation__COM_control_AI_1(pstParam);
+  //nRotateLine = find_the_first_line_for_rotation__COM_control_AI_1(pstParam);
+
+
 
   //把等待行数（等待旋转）写入指令
-  nCmd = translate_first_line_to_cmd__COM_control_AI_1(nRotateLine);
-  pstParam->COMControlMsg.write_message(nCmd);
+  //nCmd = translate_first_line_to_cmd__COM_control_AI_1(nRotateLine);
+  //pstParam->COMControlMsg.write_message(nCmd);
 
   //把旋转次数写入指令
   for (i = 0; i < nRotateTimes; i++)
@@ -79,9 +81,13 @@ int decide_control_list__COM_control_AI_1(Param *pstParam)
     }
   }
 
+  //最后写入直接往下指令
+  //pstParam->COMControlMsg.write_message(COM_CONTROL_MOVE_STRAIGT_DOWN);
+
   return 0;
 }
 
+/*
 static int find_the_first_line_for_rotation__COM_control_AI_1(Param *pstParam)
 {
   BlockElement *pstTmp = NULL;
@@ -144,8 +150,9 @@ static int find_the_first_line_for_rotation__COM_control_AI_1(Param *pstParam)
   }
 
   return -1;
-}
+}*/
 
+/*
 static int translate_first_line_to_cmd__COM_control_AI_1(int nLineNum)
 {
   switch (nLineNum)
@@ -226,4 +233,4 @@ static int translate_first_line_to_cmd__COM_control_AI_1(int nLineNum)
   }
 
   return 0;
-}
+}*/

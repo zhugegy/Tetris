@@ -108,6 +108,13 @@ static int initialize_parameter(Param *pstParam)
   //初始化BlockElement链表
   pstParam->pstFirstBlockElementCOM = NULL;
 
+  //初始化电脑速度表
+  memcpy(pstParam->nCOMSpeedList, nCOMSpeed,
+    _countof(pstParam->nCOMSpeedList) * sizeof(int));    
+
+  //初始化电脑难度等级
+  pstParam->nCOMLevel = 1;
+
   /*//AIdebug
   pstParam->CurrentPointerToBlockList = 0;
 

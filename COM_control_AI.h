@@ -2,8 +2,8 @@
 
 int get_the_best_rotate_and_coord__COM_control_AI(Param *pstParam,
   int *pnCoordiX, int *pnCoordiY, int *pnRotationTime);
-
-
+int translate_COM_cmd_to_action__COM_control_AI(Param *pstParam, int nCmd,
+  int *pnControlFlag, bool *pbIsSessionEndedCOM);
 
 #define COM_AI_TETRIS_SPACE_MAX_SCORE 2540
 #define COM_AI_TETRIS_SPACE_SCORE_OUT_REACH 2530
