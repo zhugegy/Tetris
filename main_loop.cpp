@@ -19,17 +19,20 @@ static int switch_session_block__main_loop(Param *pstParam, int *pnCurrentBlock,
 int tetris_loop__main_loop(Param *pstParam)
 {
   int nControlFlag = CONTROL_FLAG_MAIN_LOOP_RUNNING;
+  int nTmpCleanedLineNum = 0;
 
   int nCurrentBlockPlayer = 0;
   int nNextBlockPlayer = 0;
   DWORD dwTimeCounterPlayer = 0;
   bool bIsSessionEndedPlayer = false;
+  int nCleanedLinesPlayer = 0;
 
   //int nCurrentBlockCom[MAX_COM_NUM] = {0};    多重电脑，以后再加
   int nCurrentBlockCOM = 0;
   int nNextBlockCOM = 0;
   DWORD dwTimeCounterCOM = 0;
   bool bIsSessionEndedCOM = false;
+  int nCleanedLinesCOM = 0;
 
   //电脑AI的操作间隔计时器
   DWORD dwTimeCounterCOMAI = 0;
@@ -41,6 +44,9 @@ int tetris_loop__main_loop(Param *pstParam)
   //定义接收输入事件的数组和实际接收到的量
   INPUT_RECORD irBuf[128];
   DWORD nNumRead;
+
+  //打印初始分数
+  print_score__interface(nCleanedLinesPlayer, PLAYER_CONTROL);
 
   //随机出下一个方块（其实就是第一个方块，因为马上就session更新）
   nNextBlockPlayer = get_a_random_block(pstParam, -1);
@@ -58,10 +64,13 @@ int tetris_loop__main_loop(Param *pstParam)
   //如果是人机对战模式，针对电脑一边，单独：
   if (pstParam->eStageFlag == STAGE_PLAY_VS_COM)
   {
+    //打印初始分数
+    print_score__interface(nCleanedLinesCOM, COM_CONTROL);
+
     //随机出下一个方块（其实就是第一个方块，因为马上就session更新）
     nNextBlockCOM = get_a_random_block(pstParam, -1);
     
-    nNextBlockCOM = 1;
+    nNextBlockCOM = 1;    //第一个方块设置为一定是长条
     
     //session更新
     switch_session_block__main_loop(pstParam, &nCurrentBlockCOM,
@@ -86,7 +95,12 @@ int tetris_loop__main_loop(Param *pstParam)
       switch_session_block__main_loop(pstParam, &nCurrentBlockPlayer,
         &nNextBlockPlayer, PLAYER_CONTROL);
       //(尝试)消行
-      clean_line__engine(pstParam, PLAYER_CONTROL);
+      nTmpCleanedLineNum = clean_line__engine(pstParam, PLAYER_CONTROL);
+      if (nTmpCleanedLineNum != 0)
+      {
+        nCleanedLinesPlayer += nTmpCleanedLineNum;
+        print_score__interface(nCleanedLinesPlayer, PLAYER_CONTROL);
+      }
 
       //召唤新的方块（玩家）
       summon_new_block__engine(pstParam, &nControlFlag, PLAYER_CONTROL);
@@ -100,8 +114,14 @@ int tetris_loop__main_loop(Param *pstParam)
       nCurrentBlockCOM = nNextBlockCOM;
       switch_session_block__main_loop(pstParam, &nCurrentBlockCOM,
         &nNextBlockCOM, COM_CONTROL);
+      
       //(尝试)消行
-      clean_line__engine(pstParam, COM_CONTROL);
+      nTmpCleanedLineNum = clean_line__engine(pstParam, COM_CONTROL);
+      if (nTmpCleanedLineNum != 0)
+      {
+        nCleanedLinesCOM += nTmpCleanedLineNum;
+        print_score__interface(nCleanedLinesCOM, COM_CONTROL);
+      }
 
       //召唤新的方块（电脑）
       summon_new_block__engine(pstParam, &nControlFlag, COM_CONTROL);
@@ -160,19 +180,24 @@ int tetris_loop__main_loop(Param *pstParam)
             break;
           //COM_DEBUG:隐藏按键：可以控制电脑行为
           case VK_NUMPAD4:
+          case 'J':
             move_left_block__engine(pstParam, COM_CONTROL);
             break;
           case VK_NUMPAD6:
+          case 'L':
             move_right_block__engine(pstParam, COM_CONTROL);
             break;
           case VK_NUMPAD5:
+          case 'K':
             move_down_block__engine(pstParam, &nControlFlag,
               &bIsSessionEndedCOM, COM_CONTROL);
             break;
           case VK_NUMPAD8:
+          case 'I':
             rotate_block__engine(pstParam, COM_CONTROL);
             break;
           case VK_NUMPAD0:
+          case 'M':
             while (bIsSessionEndedCOM == false)
             {
               move_down_block__engine(pstParam, &nControlFlag,
@@ -180,6 +205,7 @@ int tetris_loop__main_loop(Param *pstParam)
             }
             break;
           case VK_NUMPAD1:
+          case 'O':
             //电脑难度-1
             if (pstParam->nCOMLevel > 1)
             {
@@ -187,6 +213,7 @@ int tetris_loop__main_loop(Param *pstParam)
             }
             break;
           case VK_NUMPAD2:
+          case 'P':
             if (pstParam->nCOMLevel < MAX_COM_SPEED_LIST_NUM - 1)
             {
               pstParam->nCOMLevel++;
@@ -214,6 +241,12 @@ int tetris_loop__main_loop(Param *pstParam)
   }
 
   getchar();
+  //debug
+  /*FILE *pFile = fopen("record.txt", "r+");
+  fseek(pFile, 0, SEEK_END);
+  fprintf(pFile, "%d ", nCleanedLinesCOM);
+  fflush(pFile);
+  fclose(pFile);*/
 
   return 0;
 }

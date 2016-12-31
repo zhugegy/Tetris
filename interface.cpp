@@ -342,3 +342,31 @@ int print_space__interface(COORD cPos, unsigned char chColor)
 
   return 0;
 }
+
+int print_score__interface(int nScore, PlayerVSCOMControlFlag eFlag)
+{
+  //用于打印目前分数的临时字符串（整形转字符串）
+  char szTmpStr[MAX_STRING_LENGTH] = { 0 };
+  sprintf(szTmpStr, "%d", nScore);
+
+  switch (eFlag)
+  {
+  case PLAYER_CONTROL:
+    print_element__interface(
+      INTERFACE_PLAY_SOLO_ANCHOR_POINT_EXACT_SCORING_X * 2,
+      INTERFACE_PLAY_SOLO_ANCHOR_POINT_EXACT_SCORING_Y,
+      szTmpStr, INTERFACE_BLOCK_COLOR_BLACK_WHITE);
+    break;
+  case COM_CONTROL:
+    print_element__interface(
+      INTERFACE_PLAYER_VS_COM_ANCHOR_POINT_EXACT_SCORING_X * 2,
+      INTERFACE_PLAYER_VS_COM_ANCHOR_POINT_EXACT_SCORING_Y,
+      szTmpStr, INTERFACE_BLOCK_COLOR_BLACK_WHITE);
+    break;
+  default:
+    break;
+  }
+
+
+  return 0;
+}

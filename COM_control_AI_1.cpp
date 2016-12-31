@@ -7,6 +7,7 @@
 
 //本文件指定电脑的控制策略。
 //初级策略：高度最低原则。寻找可旋转点-》等待到达可旋转点-》旋转-》左右位移-》迅速落位。
+//改进后：寻找可旋转点-》等待旋转完成-》左右位移-》（迅速落位）。
 //此AI略显粗糙，仅作为测试，或者作为最低级电脑AI使用。
 
 //static int find_the_first_line_for_rotation__COM_control_AI_1(Param *pstParam);
@@ -82,7 +83,7 @@ int decide_control_list__COM_control_AI_1(Param *pstParam)
   }
 
   //最后写入直接往下指令
-  //pstParam->COMControlMsg.write_message(COM_CONTROL_MOVE_STRAIGT_DOWN);
+  pstParam->COMControlMsg.write_message(COM_CONTROL_MOVE_STRAIGT_DOWN);
 
   return 0;
 }

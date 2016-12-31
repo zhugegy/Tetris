@@ -897,6 +897,7 @@ int get_the_line_at_bottom_to_clean__data_processor(Param *pstParam,
 int clean_line__engine(Param *pstParam, PlayerVSCOMControlFlag eFlag)
 {
   int nLineNumber = -1;
+  int nCleanedLineNum = 0;
 
   //检测是否有可以消除的行
   nLineNumber = get_the_line_at_bottom_to_clean__data_processor(pstParam, 
@@ -905,12 +906,14 @@ int clean_line__engine(Param *pstParam, PlayerVSCOMControlFlag eFlag)
   while (nLineNumber != -1)
   {
     clean_specific_line(pstParam, nLineNumber, eFlag);
-	//可以在此处添加得分相关代码
+	  //可以在此处添加得分相关代码
+    //20161231得分相关代码添加到外层，此函数返回值从默认的0改为消除的行数
+    nCleanedLineNum++;
     nLineNumber = get_the_line_at_bottom_to_clean__data_processor(pstParam, 
       eFlag);
   }
 
-  return 0;
+  return nCleanedLineNum;
 }
 
 static int clean_specific_line(Param *pstParam, int nLineNumber, 

@@ -7,20 +7,20 @@
 #define BLOCK_VALUE_MIN 51
 #define BLOCK_VALUE_MAX 80*/
 
-#define FILE_LOCATION_LINK_INFO "C:\\blockinfo.txt"
+#define FILE_LOCATION_LINK_INFO "blockinfo.txt"
+#define FILE_LOCATION_LINK_INFO_BACKUP_FILE "blockinfo_backup.txt"
 
 #define WALL_VALUE 100    //墙的数值
 #define SOLID_BLOCK_VALUE 110    //固化的方块数值
 
 //为了让玩家更好地识别纵向直线，相邻直线之间颜色略有差别（类似足球越位草坪）
+//20161231补充备注之前的改变：足球越位草坪的设计已经被取消了。现在空地一律是52。
 #define SPACE_VALUE_TYPE_A 52    //空格数值:TYPE_A
 /*#define SPACE_VALUE_TYPE_B 51    //空格数值：TYPE_B*/
 #define SPACE_VALUE_TYPE_B 52
 
 //判断空格的类型，X坐标奇数就是TYPE_A,偶数就是TYPE_B
 #define SPACE_TYPE(x) x % 2 == 0 ? SPACE_VALUE_TYPE_B : SPACE_VALUE_TYPE_A 
-
-
 
 #define MAX_STRING_LENGTH 1024    //字符串最大长度，多用于初始化临时字符串数组
 
@@ -39,7 +39,6 @@
 #define CONTROL_FLAG_MAIN_LOOP_RUNNING 1
 #define CONTROL_FLAG_MAIN_LOOP_GAME_OVER_PLAYER 20
 #define CONTROL_FLAG_MAIN_LOOP_GAME_OVER_COM 21
-//#define CONTROL_FLAG_MAIN_LOOP_SESSION_ENDING_PLAYER 11 
 
 //背景颜色
 #define INTERFACE_BASIC_BACKGROUND "30"    //蓝底（黑字）
@@ -63,7 +62,7 @@
 #define INTERFACE_SPACE_COLOR_TYPE_B 0x88    //空格灰色底灰色
 
 //固化物颜色（固定的方块）
-#define INTERFACE_SOLID_BLOCK_COLOR 0x13
+#define INTERFACE_SOLID_BLOCK_COLOR 0x13  //一种很好看的蓝色
 
 //墙形状及其颜色
 #define INTERFACE_WALL_FIGURE "■"
@@ -74,13 +73,14 @@
 #define INTERFACE_WINDOW_COORD_Y0_BASIC 0
 #define INTERFACE_WINDOW_COORD_X1_BASIC 800
 //270 maxever 470 修改此数值用于调试 别忘了同时修改 TETRIS_PLAY_SPACE_Y
-#define INTERFACE_WINDOW_COORD_Y1_BASIC 370 
+#define INTERFACE_WINDOW_COORD_Y1_BASIC 470 
 
+//WIDE用于宽窗口（人机对战，区别于单人游戏时的BASIC）
 #define INTERFACE_WINDOW_COORD_X1_WIDE 1320
 
 #define TETRIS_PLAY_SPACE_X 14    //12 + 2（墙） 列
 //23行  maxever 43 修改此数值用于调试 别忘了同时修改 INTERFACE_WINDOW_COORD_Y1_BASIC
-#define TETRIS_PLAY_SPACE_Y 33    
+#define TETRIS_PLAY_SPACE_Y 43    
 
 #define TETRIS_CUSTOMIZE_BLOCKS_SPACE_Y 6    //给高度为6的自定义方块空间
 #define TETRIS_CUSTOMIZE_BLOCKS_SPACE_X TETRIS_PLAY_SPACE_X    //自定义方块空间宽度
@@ -95,6 +95,18 @@
 #define INTERFACE_PLAY_SOLO_ANCHOR_POINT_NEXT_BLOCK_Y \
   INTERFACE_PLAY_SOLO_ANCHOR_POINT_TETRIS_SPACE_Y
 
+//玩家solo得分信息打印锚定点坐标（左上角）
+#define INTERFACE_PLAY_SOLO_ANCHOR_POINT_SCORING_X \
+  (INTERFACE_PLAY_SOLO_ANCHOR_POINT_TETRIS_SPACE_X + 16)
+#define INTERFACE_PLAY_SOLO_ANCHOR_POINT_SCORING_Y \
+  (INTERFACE_PLAY_SOLO_ANCHOR_POINT_TETRIS_SPACE_Y + 10)
+
+//玩家solo具体得分打印锚定点坐标（左上角）
+#define INTERFACE_PLAY_SOLO_ANCHOR_POINT_EXACT_SCORING_X \
+  (INTERFACE_PLAY_SOLO_ANCHOR_POINT_SCORING_X + 7)
+#define INTERFACE_PLAY_SOLO_ANCHOR_POINT_EXACT_SCORING_Y \
+  INTERFACE_PLAY_SOLO_ANCHOR_POINT_SCORING_Y
+
 //玩家VS电脑，电脑的俄罗斯方块阵列列打印锚定点坐标（左上角)
 #define INTERFACE_PLAYER_VS_COM_ANCHOR_POINT_TETRIS_SPACE_X \
   (INTERFACE_PLAY_SOLO_ANCHOR_POINT_TETRIS_SPACE_X + 32)
@@ -106,6 +118,18 @@
   (INTERFACE_PLAYER_VS_COM_ANCHOR_POINT_TETRIS_SPACE_X + 16)
 #define INTERFACE_PLAYER_VS_COM_ANCHOR_POINT_NEXT_BLOCK_Y \
   INTERFACE_PLAYER_VS_COM_ANCHOR_POINT_TETRIS_SPACE_Y
+
+//玩家VS电脑，得分信息打印锚定点坐标（左上角）
+#define INTERFACE_PLAYER_VS_COM_ANCHOR_POINT_SCORING_X \
+  (INTERFACE_PLAYER_VS_COM_ANCHOR_POINT_TETRIS_SPACE_X + 16)
+#define INTERFACE_PLAYER_VS_COM_ANCHOR_POINT_SCORING_Y \
+  (INTERFACE_PLAYER_VS_COM_ANCHOR_POINT_TETRIS_SPACE_Y + 10)
+
+//玩家VS电脑，具体得分打印锚定点坐标（左上角）
+#define INTERFACE_PLAYER_VS_COM_ANCHOR_POINT_EXACT_SCORING_X \
+  (INTERFACE_PLAYER_VS_COM_ANCHOR_POINT_SCORING_X + 7)
+#define INTERFACE_PLAYER_VS_COM_ANCHOR_POINT_EXACT_SCORING_Y \
+  INTERFACE_PLAYER_VS_COM_ANCHOR_POINT_SCORING_Y
 
 //自定义俄罗斯方块阵列打印锚定点坐标（左上角）
 #define INTERFACE_CUSTOMIZE_BLOCKS_ANCHOR_POINT_TETRIS_SPACE_X 2
@@ -172,6 +196,9 @@ const unsigned short szCustomizeBlocksIntroColor[16] = {
 
 #define INTERFACE_CUSTOMIZE_BLOCKS_FREQUENCY_STRING "方块出现频率："
 
+#define INTERFACE_SCORING_STRING "已消除行数："
+
+
 //const变量是C++语法
 /*与常量字符串数组szCustomizeBlocksFrequencyColor是一一对应的关系*/
 const char szCustomizeBlocksFrequency[6][MAX_STRING_LENGTH] = {
@@ -194,14 +221,16 @@ const unsigned short szCustomizeBlocksFrequencyColor[6] = {
   INTERFACE_BLOCK_COLOR_BLACK_RED,/*[5]*//*黑底红色*/
 };
 
+//电脑操作速度表数值个数，现在是10级变速（第0个元素（等级0）不用）
 #define MAX_COM_SPEED_LIST_NUM 11
 
 //const变量是C++语法
-/*电脑操作速度（难度），10级*/
+/*电脑操作速度（难度），10级。数值是电脑读取指令列表的时间间隔。每次新的方块出现时，指令
+列表由AI生成。*/
 const int nCOMSpeed[MAX_COM_SPEED_LIST_NUM] = {
-  500,  //0缺省
-  500,  //1
-  300,  //2
+  500,  //等级0：缺省
+  1,  //等级1
+  300,  //等级2
   200,  //3
   100,  //4
   50,   //5

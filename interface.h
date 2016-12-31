@@ -19,3 +19,4 @@ int print_space__interface(COORD cPos, unsigned char chColor);
 int print_element__interface(int nCoordX, int nCoordY, 
                              const char *pSrc = INTERFACE_SPACE_FIGURE,
                              int nColor = INTERFACE_SPACE_COLOR_TYPE_A);
+int print_score__interface(int nScore, PlayerVSCOMControlFlag eFlag);
