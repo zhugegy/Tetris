@@ -12,6 +12,7 @@
 #include "chain_list_processor.h"
 #include "data_processor.h"
 #include "play_vs_com.h"
+#include "main_menu.h"
 
 static int initialize_parameter(Param *pstParam);
 static int initialize_environment();
@@ -29,12 +30,14 @@ int _tmain(int argc, _TCHAR* argv[])
   //程序主循环
   while (stMainParam.eStageFlag != STAGE_QUIT)
   {
+    system("cls");
     //改变界面风格
     change_interface_style__interface(stMainParam.eStageFlag);
 
     switch (stMainParam.eStageFlag)
     {
     case STAGE_MAIN_MENU:
+      main_menu(&stMainParam);
       break;
     case STAGE_PLAY_SOLO:
       play_solo(&stMainParam);
@@ -65,7 +68,8 @@ static int initialize_parameter(Param *pstParam)
   //debug
   //pstParam->eStageFlag = STAGE_PLAY_SOLO;
   //pstParam->eStageFlag = STAGE_CUSTOMIZE_BLOCKS;
-  pstParam->eStageFlag = STAGE_PLAY_VS_COM;
+  //pstParam->eStageFlag = STAGE_PLAY_VS_COM;
+  pstParam->eStageFlag = STAGE_MAIN_MENU;
 
 
   //初始化俄罗斯方块方阵（玩家）
@@ -80,15 +84,14 @@ static int initialize_parameter(Param *pstParam)
   memset(pstParam->TetrisCustomizeBlocksSpace, 0,
     sizeof(pstParam->TetrisCustomizeBlocksSpace) * sizeof(char));
 
-  //从文件载入方块链表
+  //初始化方块链表
   pstParam->pstCustomizedBlockNodes = NULL;
-  load_block_list__file_operator(pstParam);
 
   //临时debug:
   //pstParam->pstCustomizedBlockNodes = NULL;
 
-  //把方块总数存储
-  pstParam->nBlockNum = get_block_total_num__chain_list_processor(pstParam);
+  //方块总数
+  pstParam->nBlockNum = 0;
 
   //初始化快捷数组
   for (i = 0; i < MAX_BLOCK_NUM; i++)
@@ -96,11 +99,9 @@ static int initialize_parameter(Param *pstParam)
     pstParam->pstFastArray[i] = NULL;
   }
 
-  //方块链表存入快捷数组
-  build_fast_array__chain_list_processor(pstParam);
 
-  //预处理所有方块（把方块的出现位置重新安排好，靠中间放置）
-  pre_process_blocks__data_processor(pstParam);
+
+  
 
   //初始化BlockElement链表
   pstParam->pstFirstBlockElementPlayer = NULL;
@@ -113,7 +114,9 @@ static int initialize_parameter(Param *pstParam)
     _countof(pstParam->nCOMSpeedList) * sizeof(int));    
 
   //初始化电脑难度等级
-  pstParam->nCOMLevel = 1;
+  pstParam->nCOMLevel = 5;
+  //默认电脑不会立即下落功能
+  pstParam->isStraightDown = false;
 
   /*//AIdebug
   pstParam->CurrentPointerToBlockList = 0;

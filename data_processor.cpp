@@ -4,6 +4,7 @@
 #include "data_processor.h"
 
 #include "chain_list_processor.h"
+#include "file_operator.h"
 
 /*
 static int is_the_top_line_empty__data_processor(
@@ -27,6 +28,7 @@ static int shift_tetris_customize_blocks_space_to_right__data_processor(
   unsigned char chTetris[][TETRIS_CUSTOMIZE_BLOCKS_SPACE_X]);
 static int shift_block_to_mid__data_processor(
   CustomizedBlock *pstCustomizedBlocks);
+static int pre_process_blocks__data_processor(Param *pstParam);
 
 //初始化俄罗斯方块方阵(游戏时)
 int set_tetris_space_to_start__data_processor(
@@ -402,9 +404,14 @@ int build_block_element_chain__data_processor(Param *pstParam,
   int i = 0;
   int j = 0;
 
+  //20170101添加nSerial相关赋值，方便COM AI的判断
+  stBlockElementTemplate.nSerial =
+    pstParam->pstFastArray[nCurrentBlock]->nSerial;
+
   //pNext由链表操作赋值，pCenter由另外的函数赋值
   stBlockElementTemplate.pNext = NULL;
   stBlockElementTemplate.pCenter = NULL;
+
   stBlockElementTemplate.nTailValue = 0;
 
   memcpy(TetrisCustomizeBlocksSpaceTmp, 
@@ -492,8 +499,31 @@ int after_process_block_element_chain__data_processor(Param *pstParam,
   return 0;
 }
 
+int reload_block_info(Param *pstParam)
+{
+  //先释放旧的方块信息链表
+  if (pstParam->pstCustomizedBlockNodes != NULL)
+  {
+    free_block_info__chain_list_processor(pstParam);
+  }
+
+  //从文件载入方块信息链表
+  load_block_list__file_operator(pstParam);
+
+  //把方块总数存储
+  pstParam->nBlockNum = get_block_total_num__chain_list_processor(pstParam);
+
+  //方块链表存入快捷数组
+  build_fast_array__chain_list_processor(pstParam);
+
+  //预处理所有方块（把方块的出现位置重新安排好，靠中间放置）
+  pre_process_blocks__data_processor(pstParam);
+
+  return 0;
+}
+
 //预处理所有方块（把方块的出现位置重新安排好，靠中间放置）
-int pre_process_blocks__data_processor(Param *pstParam)
+static int pre_process_blocks__data_processor(Param *pstParam)
 {
   int i = 0;
 
@@ -505,6 +535,7 @@ int pre_process_blocks__data_processor(Param *pstParam)
 
   return 0;
 }
+
 
 static int shift_block_to_mid__data_processor(
   CustomizedBlock *pstCustomizedBlocks)

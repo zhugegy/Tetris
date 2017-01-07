@@ -9,3 +9,4 @@ int insert_COM_block_element_node_into_chain__chain_list_processor(
   Param *pstParam, BlockElement *pstBlockElementTemplate);
 int free_current_block_element__chain_list_processor(Param *pstParam,
 	PlayerVSCOMControlFlag eFlag);
+int free_block_info__chain_list_processor(Param *pstParam);

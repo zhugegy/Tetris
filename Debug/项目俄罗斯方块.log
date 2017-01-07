@@ -1,3 +1,22 @@
-﻿  COM_control_AI.cpp
+﻿  stdafx.cpp
+  play_vs_com.cpp
+  play_solo.cpp
+  main_menu.cpp
+  main_loop.cpp
+e:\grtd\项目\tetris\main_loop.cpp(246): warning C4018: '>': signed/unsigned mismatch
+  main.cpp
+  interface.cpp
+e:\grtd\项目\tetris\interface.cpp(283): warning C4838: conversion from 'int' to 'SHORT' requires a narrowing conversion
+  file_operator.cpp
+e:\grtd\项目\tetris\file_operator.cpp(63): warning C4477: 'fscanf' : format string '%d' requires an argument of type 'int *', but variadic argument 1 has type 'unsigned char *'
+  e:\grtd\项目\tetris\file_operator.cpp(63): note: consider using '%hhd' in the format string
+  engine.cpp
+  data_processor.cpp
+  customize_blocks.cpp
+  chain_list_processor.cpp
+  MessageContainer.cpp
+  COM_control_AI_1.cpp
+  COM_control_AI.cpp
+  Generating Code...
   项目俄罗斯方块.vcxproj -> E:\Grtd\项目\tetris\Debug\项目俄罗斯方块.exe
   项目俄罗斯方块.vcxproj -> E:\Grtd\项目\tetris\Debug\项目俄罗斯方块.pdb (Full PDB)

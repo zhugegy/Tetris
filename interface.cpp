@@ -239,9 +239,10 @@ int print_element__interface(int nCoordX, int nCoordY,
   return 0;
 }
 
-//打印自定义方块界面说明信息
-int print_tetris_customize_intro__interface(int nAnchorPointX, 
-                                            int nAnchorPointY)
+//打印字符串列表说明信息，需要辅助列表指定每一行字符串的颜色
+int print_string_array__interface(int nAnchorPointX, int nAnchorPointY,
+  char szArray[][MAX_STRING_LENGTH], int nArrayCount, 
+  unsigned short StringArrayColor[])
 {
   COORD cPos;
   HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -257,10 +258,10 @@ int print_tetris_customize_intro__interface(int nAnchorPointX,
   GetConsoleScreenBufferInfo(hConsole, &csbiConsoleInfo);
   wSavedAttributes = csbiConsoleInfo.wAttributes;
 
-  for (i = 0; i < _countof(szCustomizeBlocksIntro); i++)
+  for (i = 0; i < nArrayCount; i++)
   {
-    SetConsoleTextAttribute(hConsole, szCustomizeBlocksIntroColor[i]);
-    printf(szCustomizeBlocksIntro[i]);
+    SetConsoleTextAttribute(hConsole, StringArrayColor[i]);
+    printf(szArray[i]);
 
     cPos.Y += 1;
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),cPos);
@@ -276,6 +277,7 @@ int print_tetris_customize_intro__interface(int nAnchorPointX,
 static int change_window_size__interface(int nX0, int nY0, int nX1, int nY1)
 {
   HWND hWindow = GetConsoleWindow();
+
   HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
   CONSOLE_SCREEN_BUFFER_INFO csbiRawMap;
   SMALL_RECT srRawMap = {nX0, nY0, nX1 / 10, nY1 / 10};
@@ -283,7 +285,7 @@ static int change_window_size__interface(int nX0, int nY0, int nX1, int nY1)
   GetConsoleScreenBufferInfo(hStdOut, &csbiRawMap);
 
   //移动窗口
-  MoveWindow(hWindow, nX0, nY0, nX1, nY1, TRUE);
+  //MoveWindow(hWindow, nX0, nY0, nX1, nY1, TRUE);
 
   //设置缓冲区大小
   csbiRawMap.dwSize.X = nX1 / 10;
@@ -292,9 +294,13 @@ static int change_window_size__interface(int nX0, int nY0, int nX1, int nY1)
 
   //设置窗口大小
   //SetConsoleWindowInfo(hStdOut, true, &srRawMap);
+  SetWindowPos(hWindow, HWND_TOP, nX0, nY0, nX1, nY1, NULL);
 
-  //最大化窗口
-  ShowWindow(hWindow, SW_MAXIMIZE);
+  //还原、最大化窗口
+  //ShowWindow(hWindow, SW_MINIMIZE);   //这个API不好用
+  //ShowWindow(hWindow, SW_MAXIMIZE);   //这个API不好用
+  SendMessage(hWindow, WM_SYSCOMMAND, SC_RESTORE, 0);
+  SendMessage(hWindow, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
 
   return 0;
 }

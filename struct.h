@@ -65,6 +65,9 @@ typedef struct ElementCoord
 //俄罗斯方块每一块的结构体
 typedef struct BlockElement
 {
+  //20170101 每一个方块元素都保存序列号，用于AI的判断（有些方块需要特殊对待，比如长条）
+  int nSerial;
+
   ElementCoord stCoord;
   int nValue;    //数值
   int nTailValue;    //尾部数值，用于移动时的临时存储
@@ -113,6 +116,7 @@ typedef struct Param
   //电脑AI速度（难度）
   int nCOMSpeedList[MAX_COM_SPEED_LIST_NUM];
   int nCOMLevel;
+  bool isStraightDown;
 
   /*//AIdebug
   int BlockList[100];

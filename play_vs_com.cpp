@@ -16,7 +16,8 @@ int play_vs_com(Param *pstParam)
   set_tetris_space_to_start__data_processor(pstParam->TetrisPlaySpaceCOM);
 
 
-  //初始化。。生成顺序。。。等。。
+  //载入方块信息
+  reload_block_info(pstParam);
 
   //打印背景
 

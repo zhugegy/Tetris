@@ -178,6 +178,10 @@ int tetris_loop__main_loop(Param *pstParam)
                 &bIsSessionEndedPlayer, PLAYER_CONTROL);
             }
             break;
+          case VK_ESCAPE:
+            nControlFlag = CONTROL_FLAG_MAIN_LOOP_GAME_OVER_PLAYER;
+            pstParam->eStageFlag = STAGE_MAIN_MENU;
+            break;
           //COM_DEBUG:隐藏按键：可以控制电脑行为
           case VK_NUMPAD4:
           case 'J':
@@ -219,6 +223,16 @@ int tetris_loop__main_loop(Param *pstParam)
               pstParam->nCOMLevel++;
             }
             break;
+          case VK_NUMPAD3:
+            if (pstParam->isStraightDown == false)
+            {
+              pstParam->isStraightDown = true;
+            }
+            else
+            {
+              pstParam->isStraightDown = false;
+            }
+            break;
           default:
             break;
           }
@@ -240,7 +254,7 @@ int tetris_loop__main_loop(Param *pstParam)
   
   }
 
-  getchar();
+  //getchar();
   //debug
   /*FILE *pFile = fopen("record.txt", "r+");
   fseek(pFile, 0, SEEK_END);

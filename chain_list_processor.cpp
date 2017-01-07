@@ -151,6 +151,12 @@ int insert_COM_block_element_node_into_chain__chain_list_processor(
 static int write_in_block_element_node__chain_list_processor(
   BlockElement *pstDest, BlockElement *pstSrc)
 {
+  //20170101 见上级函数
+  pstDest->nSerial = pstSrc->nSerial;
+
+  //附加修改(无关紧要的)
+  pstDest->nTailValue = pstSrc->nTailValue;
+
   pstDest->stCoord = pstSrc->stCoord;
   pstDest->nValue = pstSrc->nValue;
   pstDest->isCenter = pstSrc->isCenter;
@@ -193,6 +199,28 @@ int free_current_block_element__chain_list_processor(Param *pstParam,
   {
 	  pstParam->pstFirstBlockElementCOM = NULL;
   }
+
+  return 0;
+}
+
+//释放当前方块元素资源
+int free_block_info__chain_list_processor(Param *pstParam)
+{
+  CustomizedBlock *pstTmp = NULL;
+  CustomizedBlock *pstNext = NULL;
+
+  pstTmp = pstParam->pstCustomizedBlockNodes;
+
+  while (pstTmp)
+  {
+    pstNext = pstTmp->pNext;
+
+    free((void *)pstTmp);
+
+    pstTmp = pstNext;
+  }
+
+  pstParam->pstCustomizedBlockNodes = NULL;
 
   return 0;
 }

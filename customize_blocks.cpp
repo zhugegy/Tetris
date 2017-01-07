@@ -27,12 +27,13 @@ static int save_customize_info__customize_interface(
 
 int customize_blocks(Param *pstParam)
 {
-  //int nControlFlag = 0;    //用于控制稍后的画图子步骤
-
   //打印说明
-  print_tetris_customize_intro__interface(
+  print_string_array__interface(
     INTERFACE_CUSTOMIZE_BLOCKS_ANCHOR_POINT_INTRO_X * 2,
-    INTERFACE_CUSTOMIZE_BLOCKS_ANCHOR_POINT_INTRO_Y);
+    INTERFACE_CUSTOMIZE_BLOCKS_ANCHOR_POINT_INTRO_Y,
+    (char (*)[MAX_STRING_LENGTH]) szCustomizeBlocksIntro, 
+    _countof(szCustomizeBlocksIntro),
+    (unsigned short *) szCustomizeBlocksIntroColor);
 
   //打印“方块出现频率”这一行字
   print_element__interface(
@@ -44,13 +45,6 @@ int customize_blocks(Param *pstParam)
   //打印当前频率（中等）
   print_block_frequency__customize_interface(
     CUSTOMIZED_BLOCK_FREQUENCY_NORMAL);
-
-  /*nControlFlag = 1;    //代表画图进行中
-
-  while (nControlFlag == 1)
-  {
-  
-  }*/
   
   edit_blocks__customize_blocks(pstParam, pstParam->TetrisCustomizeBlocksSpace);
 
@@ -142,6 +136,8 @@ static int edit_blocks__customize_blocks(Param *pstParam,
     }
 
   }
+
+  pstParam->eStageFlag = STAGE_MAIN_MENU;
 
   return 0;
 }
@@ -261,7 +257,9 @@ static int handle_keyboard_input__customize_blocks(KEY_EVENT_RECORD kerTmp,
     //通知上层函数保存当前方块信息
     *pnControlFlag = CONTROL_FLAG_CUSTOMIZE_BLOCKS_SAVE;
     break;
-
+  case VK_ESCAPE:
+    *pnControlFlag = CONTROL_FLAG_CUSTOMIZE_BLOCKS_QUIT;
+    break;
   default:
     break;
   }

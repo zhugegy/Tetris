@@ -83,7 +83,10 @@ int decide_control_list__COM_control_AI_1(Param *pstParam)
   }
 
   //最后写入直接往下指令
-  pstParam->COMControlMsg.write_message(COM_CONTROL_MOVE_STRAIGT_DOWN);
+  if (pstParam->isStraightDown)
+  {
+    pstParam->COMControlMsg.write_message(COM_CONTROL_MOVE_STRAIGT_DOWN);
+  }
 
   return 0;
 }

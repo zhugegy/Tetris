@@ -7,8 +7,8 @@
 #define BLOCK_VALUE_MIN 51
 #define BLOCK_VALUE_MAX 80*/
 
-#define FILE_LOCATION_LINK_INFO "blockinfo.txt"
-#define FILE_LOCATION_LINK_INFO_BACKUP_FILE "blockinfo_backup.txt"
+#define FILE_LOCATION_LINK_INFO "game_data//block_info.txt"
+#define FILE_LOCATION_LINK_INFO_BACKUP_FILE "game_data//backup//block_info_backup.txt"
 
 #define WALL_VALUE 100    //墙的数值
 #define SOLID_BLOCK_VALUE 110    //固化的方块数值
@@ -54,6 +54,12 @@
 #define INTERFACE_BLOCK_COLOR_BLACK_LIGHT_PURPLE 0x05    //黑底暗紫色
 #define INTERFACE_BLOCK_COLOR_BLACK_PURPLE 0x0D    //黑底紫色
 #define INTERFACE_BLOCK_COLOR_BLACK_RED 0x0C    //黑底红色
+#define INTERFACE_BLOCK_COLOR_CYAN_BLACK 0x30    //青底黑色
+#define INTERFACE_BLOCK_COLOR_BLUE_BLACK 0x90    //蓝底黑色
+#define INTERFACE_BLOCK_COLOR_WHITE_BLACK 0xF0    //白底黑色
+#define INTERFACE_BLOCK_COLOR_CYAN_WHITE 0x3F    //青底黑色
+#define INTERFACE_BLOCK_COLOR_CYAN_YELLOW 0x3E    //青底黄色
+
 
 
 //空地形状及其颜色
@@ -71,19 +77,30 @@
 //窗口在屏幕上的坐标，同时也用于窗口缓冲区大小、窗口大小（除以10）
 #define INTERFACE_WINDOW_COORD_X0_BASIC 0
 #define INTERFACE_WINDOW_COORD_Y0_BASIC 0
-#define INTERFACE_WINDOW_COORD_X1_BASIC 800
+//#define INTERFACE_WINDOW_COORD_X1_BASIC 800
+#define INTERFACE_WINDOW_COORD_X1_BASIC 1320    //暂时这么用着
 //270 maxever 470 修改此数值用于调试 别忘了同时修改 TETRIS_PLAY_SPACE_Y
-#define INTERFACE_WINDOW_COORD_Y1_BASIC 470 
+#define INTERFACE_WINDOW_COORD_Y1_BASIC 330 
 
 //WIDE用于宽窗口（人机对战，区别于单人游戏时的BASIC）
 #define INTERFACE_WINDOW_COORD_X1_WIDE 1320
 
 #define TETRIS_PLAY_SPACE_X 14    //12 + 2（墙） 列
 //23行  maxever 43 修改此数值用于调试 别忘了同时修改 INTERFACE_WINDOW_COORD_Y1_BASIC
-#define TETRIS_PLAY_SPACE_Y 43    
+#define TETRIS_PLAY_SPACE_Y 29    
 
 #define TETRIS_CUSTOMIZE_BLOCKS_SPACE_Y 6    //给高度为6的自定义方块空间
 #define TETRIS_CUSTOMIZE_BLOCKS_SPACE_X TETRIS_PLAY_SPACE_X    //自定义方块空间宽度
+
+//菜单打印锚定点坐标（左上角）
+#define INTERFACE_MENU_ANCHOR_POINT_X 22    //12
+#define INTERFACE_MENU_ANCHOR_POINT_Y 4
+
+//菜单指示器锚定点坐标（左上角）
+#define INTERFACE_MENU_POINTER_ANCHOR_POINT_X \
+  (INTERFACE_MENU_ANCHOR_POINT_X + 2)
+#define INTERFACE_MENU_POINTER_ANCHOR_POINT_Y \
+  (INTERFACE_MENU_ANCHOR_POINT_Y + 3)
 
 //玩家solo俄罗斯方块阵列打印锚定点坐标（左上角）
 #define INTERFACE_PLAY_SOLO_ANCHOR_POINT_TETRIS_SPACE_X 2
@@ -151,6 +168,41 @@
   (INTERFACE_CUSTOMIZE_BLOCKS_ANCHOR_POINT_BLOCK_FREQUENCY_X + 9)
 #define INTERFACE_CUSTOMIZE_BLOCKS_ANCHOR_POINT_BLOCK_EXACT_FREQUENCY_Y \
   INTERFACE_CUSTOMIZE_BLOCKS_ANCHOR_POINT_BLOCK_FREQUENCY_Y
+
+//const变量是C++语法
+/*与常量字符数组szMenuStringColor是一一对应的关系*/
+const char szMenuString[11][MAX_STRING_LENGTH] = {
+  " 俄罗斯方块(可自定义方块) ",/*[0]*/
+  "",/*[1]*/
+  "",/*[2]*/
+  "      单人游戏",/*[3]*/
+  "      人机对战",/*[4]*/
+  "      自定义方块",/*[5]*/
+  "      退出游戏",/*[6]*/
+  "",/*[7]*/
+  "",/*[8]*/
+  "控制电脑速度：小键盘1和2;控制电脑是否快速下落：小键盘3。",/*[9]*/
+  "游戏中按ESC键返回主菜单。",/*[10]*/
+};
+
+//菜单字符串开头的无效选项：标题，空行,尾部的说明
+#define VOID_SLOT_IN_MENU 7
+
+//const变量是C++语法
+/*与常量字符串数组szMenuString是一一对应的关系*/
+const unsigned short szMenuStringColor[11] = {
+  INTERFACE_BLOCK_COLOR_BLACK_YELLOW,/*[0]*//*黑底黄字*/
+  INTERFACE_BLOCK_COLOR_CYAN_BLACK,/*[1]*//*青底黑字*/
+  INTERFACE_BLOCK_COLOR_CYAN_BLACK,/*[2]*//*青底黑字*/
+  INTERFACE_BLOCK_COLOR_CYAN_BLACK,/*[3]*//*青底黑字*/
+  INTERFACE_BLOCK_COLOR_CYAN_BLACK,/*[4]*//*青底黑字*/
+  INTERFACE_BLOCK_COLOR_CYAN_BLACK,/*[5]*//*青底黑字*/
+  INTERFACE_BLOCK_COLOR_CYAN_BLACK,/*[6]*//*青底黑字*/
+  INTERFACE_BLOCK_COLOR_CYAN_BLACK,/*[7]*//*青底黑字*/
+  INTERFACE_BLOCK_COLOR_CYAN_BLACK,/*[8]*//*青底黑字*/
+  INTERFACE_BLOCK_COLOR_CYAN_YELLOW,/*[9]*//*青底黄字*/
+  INTERFACE_BLOCK_COLOR_CYAN_YELLOW,/*[10]*//*青底黄字*/
+};
 
 //const变量是C++语法
 /*与常量字符数组szCustomizeBlocksIntroColor是一一对应的关系*/
@@ -229,7 +281,7 @@ const unsigned short szCustomizeBlocksFrequencyColor[6] = {
 列表由AI生成。*/
 const int nCOMSpeed[MAX_COM_SPEED_LIST_NUM] = {
   500,  //等级0：缺省
-  1,  //等级1
+  500,  //等级1
   300,  //等级2
   200,  //3
   100,  //4
@@ -240,3 +292,20 @@ const int nCOMSpeed[MAX_COM_SPEED_LIST_NUM] = {
   2,    //9
   1     //10
 };
+
+//AI策略参数：调整AI策略可以直接修改下面参数的数值
+//AI是否会使用快速下落:1会，0不会
+#define AI_STRATEGY_STRAIGHT_DOWN 0
+
+//落位后下方有空格会惩罚，检测深度：默认3
+#define AI_STRATEGY_PUNISHMENT_DEEPTH 3
+
+//落位后下方有空格会惩罚，惩罚数值：默认40
+#define AI_STRATEGY_PUNISHMENT_VALUE 40
+
+//落位后，整体高度差的权重：默认5
+#define AI_STRATEGY_HEIGHT_DISTANCE_FACTOR 5
+
+//落位后，当前方块的中心点高度权重：默认5
+#define AI_STRATEGY_CENTER_POINT_HEIGHT_FACTOR 5
+
