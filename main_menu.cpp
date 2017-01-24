@@ -51,7 +51,7 @@ int main_menu(Param *pstParam)
       {
         if (irBuf[k].Event.KeyEvent.bKeyDown == 1)
         {
-          //根据事件种类）决定处理方式
+          //根据按键决定处理方式
           switch (irBuf[k].Event.KeyEvent.wVirtualKeyCode)
           {
           case VK_UP:

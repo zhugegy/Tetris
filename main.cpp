@@ -99,10 +99,6 @@ static int initialize_parameter(Param *pstParam)
     pstParam->pstFastArray[i] = NULL;
   }
 
-
-
-  
-
   //³õÊ¼»¯BlockElementÁ´±í
   pstParam->pstFirstBlockElementPlayer = NULL;
 

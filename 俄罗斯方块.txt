@@ -1,0 +1,83 @@
+main menu
+cyan
+blue
+orange
+yellow
+megenta
+purple
+red
+
+自定义方块浏览
+重置自定义方块至默认
+游戏结束判断
+
+多个电脑
+
+
+改了4个地方
+stParam
+intialParam
+main_loop 1
+switch session 2
+
+1 MOMM
+
+2 MOM
+    M
+
+3 MOM
+  M
+
+4 MM
+  OM
+
+5  MM
+  MO
+
+6 MOM
+   M
+
+7 MM
+   OM
+
+DONE 长条左边竖直异常 （多出现在气泡多的情况下）
+
+DONE pubulishment 6 不行
+
+DONE 电脑 第一个人工随机出长条，避免尴
+
+DONE 6000 30就够
+
+DONE move_down ifelse getbackpostion 不用wait till机制了
+
+DONE 继续减小swtich case default 2 ， 不用wait till机制了
+
+DONE find first line to rotate 有问题，返回值不对 （总是-1？） 改进了，而且此函数被注释掉了 不用wait till机制了
+
+DONE 加入快速下落COM
+
+DONE 消行不一定好，下面空格pubulish*高度加成，彻底移除判断
+
+DONE 优化mainloop里那么多时间，变量&函数
+
+DONE 不连续出现两个一样的方块（有利AI）
+
+DONE 下面空格惩罚，不能只看中心点，还要看其他的(Z型方块就是例子，大多数都是Z影响消行)
+
+DONE 计分器
+
+DONE 文件本地化
+
+DONE DISTANCE 5  4*30 => 3 * 40 调试参数
+
+DONE 很多判断当前方块形状的判断都错了，不应该判断nValue因为这是颜色，用户可以自定义。真正安全的方法是判断序列号 序列号怎么加？build_block_    			     element_chain__data_processor函数
+
+DONE 制作菜单
+
+szCustomizeBlocksFrequencyColor和菜单不是一个函数调用
+
+DONE 选择菜单选项后，清空命令台
+
+DONE 窗口变大没法回复(暂时都改成最大)
+
+读取方块数据位置错误
