@@ -1,6 +1,6 @@
 # tetris
 
-![title_img](doc/title_img.jpg)
+![title_img](doc/title_img.png)
 
 Tetris game with customizable tetrominoes, and a bot adversary (on the right side).
 
@@ -19,7 +19,7 @@ Development Environment: Visual Studio 2015
 
 ---
 
-![title_img](doc/title_img.jpg)
+![title_img](doc/title_img.png)
 
 可自定义方块的俄罗斯方块，还有电脑人陪玩（屏幕右侧）。
 
