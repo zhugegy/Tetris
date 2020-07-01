@@ -15,8 +15,6 @@ Features:
 - The bot adversary can handle both traditional and customized tetrominoes
 - The bot adversary's play speed can be tuned
 
-Development Environment: Visual Studio 2015
-
 ---
 
 ![title_img](doc/title_img.png)
@@ -33,5 +31,3 @@ Development Environment: Visual Studio 2015
 - 自定义方块信息被保存在硬盘文件中
 - 电脑人能应对传统方块，也能应对自定义方块
 - 电脑人速度可调
-
-开发环境： Visual Studio 2015
