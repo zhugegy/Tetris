@@ -23,9 +23,9 @@ Features:
 
 可自定义方块的俄罗斯方块，还有电脑人陪玩（屏幕右侧）。
 
-演示视频： [BiliBili](http://www.bilibili.com/video/av8188837/)
+演示视频：[BiliBili](http://www.bilibili.com/video/av8188837/)
 
-可执行文件下载: [蓝奏云](https://wws.lanzous.com/iKvqGe89ssh)
+可执行文件下载：[蓝奏云](https://wws.lanzous.com/iKvqGe89ssh)
 
 特色功能：
 - Windows 控制台编程
