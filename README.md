@@ -25,7 +25,7 @@ Features:
 
 演示视频：[BiliBili](https://www.bilibili.com/video/BV1rs411b7VG/)
 
-可执行文件下载：[蓝奏云](https://wws.lanzous.com/iwrz1e8b32d)
+可执行文件下载：[蓝奏云](https://wws.lanzous.com/i8aSHe8o29c)
 
 特色：
 - Windows控制台编程
