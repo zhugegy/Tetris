@@ -1,4 +1,4 @@
-# tetris
+# Tetris
 
 ![title_img](doc/title_img.png)
 
@@ -23,12 +23,12 @@ Features:
 
 可自定义方块的俄罗斯方块，还有电脑人陪玩（屏幕右侧）。
 
-演示视频：[BiliBili](http://www.bilibili.com/video/av8188837/)
+演示视频：[BiliBili](https://www.bilibili.com/video/BV1rs411b7VG/)
 
 可执行文件下载：[蓝奏云](https://wws.lanzous.com/iwrz1e8b32d)
 
 特色功能：
-- Windows 控制台编程
+- Windows控制台编程
 - 通过鼠标绘图自定义方块（演示视频2：03处）
 - 自定义方块信息被保存在硬盘文件中
 - 电脑人能应对传统方块，也能应对自定义方块
